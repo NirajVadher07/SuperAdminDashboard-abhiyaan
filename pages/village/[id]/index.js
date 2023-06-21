@@ -118,10 +118,10 @@ const VillageDetails = () => {
                                         ""
                                     )
                                 })}
-                                {attributes?.notices?.data.length != 0 && attributes?.notices?.data.length > 5  ? (
+                                {attributes?.notices?.data.length != 0 && attributes?.notices?.data.length > 5 ? (
                                     <Link href={{
                                         pathname: `/village/${id}/moredetails`,
-                                        query: {Id:id, Name:"notices"},
+                                        query: { Id: id, Name: "notices" },
                                     }}>
                                         <button className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
                                             More Details..
@@ -157,10 +157,10 @@ const VillageDetails = () => {
                                         ""
                                     )
                                 })}
-                                {attributes?.complaints?.data.length != 0 ? (
+                                {attributes?.complaints?.data.length != 0 && attributes?.complaints?.data.length > 5 ? (
                                     <Link href={{
                                         pathname: `/village/${id}/moredetails`,
-                                        query: {Id:id, Name:"complaints"},
+                                        query: { Id: id, Name: "complaints" },
                                     }}>
                                         <button className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
                                             More Details..
@@ -170,6 +170,55 @@ const VillageDetails = () => {
                                 {attributes?.complaints?.data.length === 0 ? (
                                     <div className='text-center italic font-bold text-xl w-full text-gray-600'>
                                         No Complaint
+                                    </div>
+                                ) : ("")}
+                            </div>
+                        </div>
+                        {/* News */}
+                        <div className='flex flex-col justify-start items-start mt-5'>
+                            <div className='flex justify-center items-center mx-5'>
+                                <h1 className='text-3xl font-bold text-[#590DE1] '>
+                                    News
+                                </h1>
+                            </div>
+                            <div className='w-full p-2 mt-2 flex justify-evenly items-start'>
+                                {attributes?.news?.data && attributes?.news?.data.length != 0 && attributes?.news?.data?.map((news, index) => {
+                                    return index < 3 ?
+                                        (
+                                            <div className="w-1/4 mx-2 my-2 rounded overflow-hidden shadow-lg">
+                                                <img className="w-full" style={{height:"250px"}} src={news?.attributes?.image != null ? news?.attributes?.image : "/news.jpg"} alt="news image" />
+                                                <div className="px-6 py-4">
+                                                    <div className="font-bold text-xl mb-2">{news?.attributes?.title.substring(0,100)}..</div>
+                                                    <p className="text-gray-700 text-base">
+                                                        {news?.attributes?.description.substring(0,230)}... 
+                                                    </p>
+                                                </div>
+                                                <div className="px-6 pt-4 pb-2 flex justify-evenly">
+                                                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{news?.attributes?.source ? news?.attributes?.source : "NA"}</span>
+                                                    <Link href={news?.attributes?.url ? news?.attributes?.url : "#"} className=" cursor-pointer inline-block bg-[#590DE1] rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Read More</Link>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            " "
+                                        )
+                                })}                                
+                            </div>
+                            <div>                                
+                                {attributes?.news?.data.length != 0 ? (
+                                    <Link href={{
+                                        pathname: `/village/${id}/moredetails`,
+                                        query: { Id: id, Name: "news" },
+                                    }} className='p-2 mt-2 '>
+                                        <button className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
+                                            More Details..
+                                        </button>
+                                    </Link>
+                                ) : ("")}
+                                {attributes?.news?.data.length === 0 ? (
+                                    <div className='text-center italic font-bold text-xl w-[100vw] text-gray-600'>
+                                        <div>
+                                            No news
+                                        </div>
                                     </div>
                                 ) : ("")}
                             </div>
