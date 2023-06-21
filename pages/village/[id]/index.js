@@ -186,11 +186,11 @@ const VillageDetails = () => {
                                     return index < 3 ?
                                         (
                                             <div className="w-1/4 mx-2 my-2 rounded overflow-hidden shadow-lg">
-                                                <img className="w-full" style={{height:"250px"}} src={news?.attributes?.image != null ? news?.attributes?.image : "/news.jpg"} alt="news image" />
+                                                <img className="w-full" style={{ height: "250px" }} src={news?.attributes?.image != null ? news?.attributes?.image : "/news.jpg"} alt="news image" />
                                                 <div className="px-6 py-4">
-                                                    <div className="font-bold text-xl mb-2">{news?.attributes?.title.substring(0,100)}..</div>
+                                                    <div className="font-bold text-xl mb-2">{news?.attributes?.title.substring(0, 100)}..</div>
                                                     <p className="text-gray-700 text-base">
-                                                        {news?.attributes?.description.substring(0,230)}... 
+                                                        {news?.attributes?.description.substring(0, 230)}...
                                                     </p>
                                                 </div>
                                                 <div className="px-6 pt-4 pb-2 flex justify-evenly">
@@ -201,9 +201,9 @@ const VillageDetails = () => {
                                         ) : (
                                             " "
                                         )
-                                })}                                
+                                })}
                             </div>
-                            <div>                                
+                            <div>
                                 {attributes?.news?.data.length != 0 ? (
                                     <Link href={{
                                         pathname: `/village/${id}/moredetails`,
@@ -223,7 +223,7 @@ const VillageDetails = () => {
                                 ) : ("")}
                             </div>
                         </div>
-                        {/* Carousel */}
+                        {/* Carousel */} 
                         {/* <div className='h-[60vh]'>
                             <Carosuel gallery={attributes?.gallery?.data}/>
                         </div> */}

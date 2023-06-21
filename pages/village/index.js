@@ -40,7 +40,7 @@ const Village = () => {
                     <thead className="text-xs text-black uppercase bg-gray-300">
                         <tr>
                             <th scope="col" className="px-6 py-3 text-left">
-                                Name
+                                Village
                             </th>
                             <th scope="col" className="px-6 py-3 text-center">
                                 Status
