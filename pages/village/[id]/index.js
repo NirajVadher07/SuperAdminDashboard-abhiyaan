@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import checkAuth from '@/pages/utils/checkAuth'
 import { useRouter } from 'next/router'
-import Carosuel from '@/pages/components/Carosuel'
 import Link from 'next/link'
 import Loader from '@/pages/components/Loader'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import ImageSlider from '@/pages/components/ImageSlider'
 
 const VillageDetails = () => {
     const router = useRouter()
@@ -24,6 +26,7 @@ const VillageDetails = () => {
             setId(response?.data?.id)
             setAttributes(response?.data?.attributes)
         } catch (error) {
+            toast.error("Fetch Data Error");
             console.log("Fetch Data Error : ", error)
         }
     }
@@ -44,6 +47,7 @@ const VillageDetails = () => {
 
     return (
         <div className='text-black'>
+            <ToastContainer />
             {
                 attributes ? (
                     <div className='min-h-[100vh] mt-2'>
@@ -225,12 +229,12 @@ const VillageDetails = () => {
                             </div>
                         </div>
                         {/* Carousel */}
-                        {/* <div className='h-[60vh]'>
-                            <Carosuel gallery={attributes?.gallery?.data}/>
-                        </div> */}
+                        <div>
+                            <ImageSlider gallery={attributes?.gallery?.data} />
+                        </div>
                     </div>
                 ) : (
-                    <Loader/>
+                    <Loader />
                 )}
         </div>
     )
