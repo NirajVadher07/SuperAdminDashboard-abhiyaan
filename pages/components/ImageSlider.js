@@ -54,7 +54,7 @@ const ImageSlider = ({ gallery }) => {
                                 <div
                                     key={slideIndex}
                                     onClick={() => goToSlide(slideIndex)}
-                                    className={`text-2xl cursor-pointer ${slideIndex==currentIndex ? ("text-[#590DE1] mx-5") : ("")}`}
+                                    className={`text-4xl cursor-pointer ${slideIndex==currentIndex ? ("text-[#590DE1] mx-5 transition-all") : ("")}`}
                                 >
                                     <RxDotFilled />
                                 </div>

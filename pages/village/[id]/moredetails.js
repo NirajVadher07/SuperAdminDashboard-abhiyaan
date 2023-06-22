@@ -90,13 +90,15 @@ const MoreDetails = () => {
                   <div className='w-full p-2 mt-2 flex flex-wrap justify-evenly items-start'>
                     {details.map((news, index) => {
                       return (
-                        <div id={index} className="w-1/4 min-h-[600px] mx-2 flex flex-col justify-evenly rounded overflow-hidden shadow-lg my-2">
-                          <img className="w-full" style={{height:"250px"}} src={news?.attributes?.image != null ? news?.attributes?.image : "/news.jpg"} alt="news image" />
-                          <div className="px-6 py-4">
-                            <div className="font-bold text-xl mb-2">{news?.attributes?.title?.substring(0, 100)}..</div>
-                            <p className="text-gray-700 text-base">
-                              {news?.attributes?.description?.substring(0, 230)}...
-                            </p>
+                        <div id={index} className="w-1/4 min-h-[600px] mx-2 flex flex-col justify-between rounded overflow-hidden shadow-lg my-2">
+                          <div>
+                            <img className="w-full" style={{ height: "250px" }} src={news?.attributes?.image != null ? news?.attributes?.image : "/news.jpg"} alt="news image" />
+                            <div className="px-6 py-4">
+                              <div className="font-bold text-xl mb-2">{news?.attributes?.title?.substring(0, 100)}..</div>
+                              <p className="text-gray-700 text-base">
+                                {news?.attributes?.description?.substring(0, 230)}...
+                              </p>
+                            </div>
                           </div>
                           <div className="px-6 pt-4 pb-2 flex justify-evenly flex-wrap">
                             <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{news?.attributes?.source ? news?.attributes?.source : "NA"}</span>
