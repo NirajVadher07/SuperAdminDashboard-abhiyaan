@@ -3,6 +3,7 @@ import checkAuth from '@/pages/utils/checkAuth'
 import { useRouter } from 'next/router'
 import Carosuel from '@/pages/components/Carosuel'
 import Link from 'next/link'
+import Loader from '@/pages/components/Loader'
 
 const VillageDetails = () => {
     const router = useRouter()
@@ -49,7 +50,7 @@ const VillageDetails = () => {
                         {/* village name and other information */}
                         <div className={`p-2 flex justify-evenly items-center ${attributes?.activated ? ("bg-green-500") : ("bg-red-500")} bg-green-500 text-white`}>
                             <div className='text-3xl font-bold flex flex-col justify-center items-center'>
-                                {attributes?.name}
+                                {attributes?.name ? (attributes?.name) : ("---")}
                                 <span className='text-xs font-semibold text-gray-300'>Village</span>
                             </div>
                             <div className='text-3xl font-bold flex flex-col justify-center items-center'>
@@ -204,7 +205,7 @@ const VillageDetails = () => {
                                 })}
                             </div>
                             <div>
-                                {attributes?.news?.data.length != 0 ? (
+                                {attributes?.news?.data.length != 0 && attributes?.news?.data.length > 3 ? (
                                     <Link href={{
                                         pathname: `/village/${id}/moredetails`,
                                         query: { Id: id, Name: "news" },
@@ -223,13 +224,13 @@ const VillageDetails = () => {
                                 ) : ("")}
                             </div>
                         </div>
-                        {/* Carousel */} 
+                        {/* Carousel */}
                         {/* <div className='h-[60vh]'>
                             <Carosuel gallery={attributes?.gallery?.data}/>
                         </div> */}
                     </div>
                 ) : (
-                    "Loading...."
+                    <Loader/>
                 )}
         </div>
     )
