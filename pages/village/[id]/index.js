@@ -186,7 +186,7 @@ const VillageDetails = () => {
                                 {attributes?.news?.data && attributes?.news?.data.length != 0 && attributes?.news?.data?.map((news, index) => {
                                     return index < 3 ?
                                         (
-                                            <div className="w-1/4 mx-2 my-2 rounded overflow-hidden shadow-lg">
+                                            <div className="w-1/4 min-h-[600px] mx-2 my-2 rounded flex flex-col justify-evenly overflow-hidden shadow-lg">
                                                 <img className="w-full" style={{ height: "250px" }} src={news?.attributes?.image != null ? news?.attributes?.image : "/news.jpg"} alt="news image" />
                                                 <div className="px-6 py-4">
                                                     <div className="font-bold text-xl mb-2">{news?.attributes?.title.substring(0, 100)}..</div>
