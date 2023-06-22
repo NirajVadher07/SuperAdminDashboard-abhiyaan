@@ -1,28 +1,34 @@
 import React from 'react'
 import Link from 'next/link'
-const ListVillage = (element) => {
-    const { id, attributes } = element;
+
+const ListVillage = ({ element, checkedItems, handleCheckboxChange }) => {
+    const id = element?.id;
+    const attributes = element?.attributes
+    
     return (
         <>
-            <tr id={id} className="bg-white border-b hover:bg-[#590DE1] hover:text-white">
-                <th scope="row" className=" text-left px-6 py-4 font-medium whitespace-nowrap">
-                    {attributes.name}
-                </th>
-                <td className="px-6 py-4 text-center font-semibold">
-                    {attributes.activated ? (
-                        <div className='flex justify-center items-center'>
-                            <h1 className='w-1/3'>Subscribed</h1>
-                            <div className='w-[18px] h-[18px] bg-green-500 rounded-full ml-5'></div>
-                        </div>
-                    ) : (
-                        <div className='flex justify-center items-center'>
-                            <h1 className='w-1/3'>Unsubscribed</h1>
-                            <div className='w-[18px] h-[18px] bg-red-500 rounded-full ml-5'></div>
-                        </div>
-                    )}
+            <tr id={`${id}-Village`} className={`font-medium text-black ${attributes?.activated ? ("hover:bg-green-500 hover:text-white") : ("hover:bg-red-500 hover:text-white")}`}>
+                <td scope="row" className=" text-center px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" name="village" id={`Village${id}`}
+                        // value={id}
+                        // checked={checkedItems.includes(id)}
+                        // onChange={handleCheckboxChange}
+                        className='w-5 h-5 text-[#590DE1] rounded-md focus:ring-0' />
+                </td>
+                <td scope="row" className=" text-center px-6 py-4 whitespace-nowrap">
+                    {attributes.name ? attributes.name.toUpperCase() : "---"}
+                </td>
+                <td scope="row" className=" text-center px-6 py-4  whitespace-nowrap">
+                    {attributes?.sub_district?.data?.attributes?.name ? attributes?.sub_district?.data?.attributes?.name.toUpperCase() : "---"}
+                </td>
+                <td scope="row" className=" text-center px-6 py-4  whitespace-nowrap">
+                    {attributes?.city?.data?.attributes?.name ? attributes?.city?.data?.attributes?.name.toUpperCase() : "---"}
+                </td>
+                <td scope="row" className=" text-center px-6 py-4  whitespace-nowrap">
+                    {attributes?.state?.data?.attributes?.name ? attributes?.state?.data?.attributes?.name.toUpperCase() : "---"}
                 </td>
                 <td className="px-6 py-4 text-right font-semibold cursor-pointer">
-                    <Link href={`/village/${id}`} className='border-2 p-2 rounded-lg border-white '>
+                    <Link href={`/village/${id}`} className='p-2 rounded-lg'>
                         More Details...
                     </Link>
                 </td>
