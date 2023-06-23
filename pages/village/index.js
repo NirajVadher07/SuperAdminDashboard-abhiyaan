@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import checkAuth from '../utils/checkAuth'
 import { useRouter } from 'next/router'
 import ListVillage from '../components/ListVillage'
@@ -48,148 +48,61 @@ const Village = () => {
     const [activated, setActivated] = useState("")
     const [filterData, setFilterData] = useState([])
 
-    // const [isActive, setIsActive] = useState([])
-    // const handleFilter = (e, Name) => {
-    //     if (Name === 'subdistrict') {
-    //         setSubdistrict(e.target.value);
-    //         if (isActive.includes('subdistrict') && e.target.value === '') {
-    //             setIsActive(isActive.filter((element) => element !== 'subdistrict'));
-    //         }
-    //         if (!isActive.includes('subdistrict')) {
-    //             setIsActive([...isActive, 'subdistrict']);
-    //         }
-    //     } else if (Name === 'city') {
-    //         setCity(e.target.value);
-    //         if (isActive.includes('city') && e.target.value === '') {
-    //             setIsActive(isActive.filter((element) => element !== 'city'));
-    //         }
-    //         if (!isActive.includes('city')) {
-    //             setIsActive([...isActive, 'city']);
-    //         }
-    //     } else if (Name === 'state') {
-    //         setState(e.target.value);
-    //         if (isActive.includes('state') && e.target.value === '') {
-    //             setIsActive(isActive.filter((element) => element !== 'state'));
-    //         }
-    //         if (!isActive.includes('state')) {
-    //             setIsActive([...isActive, 'state']);
-    //         }
-    //     } else if (Name === 'activated') {
-    //         setActivated(e.target.value);
-    //         if (isActive.includes('activated') && e.target.value === '') {
-    //             setIsActive(isActive.filter((element) => element !== 'activated'));
-    //         }
-    //         if (!isActive.includes('activated')) {
-    //             setIsActive([...isActive, 'activated']);
-    //         }
-    //     }
-
-    //     if (isActive.length === 0) {
-    //         setFilterData(villageData);
-    //         return;
-    //     } else {
-    //         let temp = villageData.filter((element) => {
-    //             let isAllTrue = false;
-    //             isActive.forEach((active) => {
-    //                 switch (active) {
-    //                     case 'subdistrict':
-    //                         let CheckSubDistrict = element?.attributes?.sub_district?.data?.attributes?.name.toLowerCase().includes(subdistrict.toLowerCase());
-    //                         if (CheckSubDistrict) {
-    //                             isAllTrue = true;
-    //                         }
-    //                         break;
-    //                     case 'city':
-    //                         let CheckCity = element?.attributes?.city?.data?.attributes?.name.toLowerCase().includes(city.toLowerCase());
-    //                         if (CheckCity) {
-    //                             isAllTrue = true;
-    //                         }
-    //                         break;
-    //                     case 'state':
-    //                         let CheckState = element?.attributes?.state?.data?.attributes?.name.toLowerCase().includes(state.toLowerCase());
-    //                         if (CheckState) {
-    //                             isAllTrue = true;
-    //                         }
-    //                         break;
-    //                     case 'activated':
-    //                         let CheckActivatedTrue = (activated === 'Subscribed' && element?.attributes?.activated === true);
-    //                         let CheckActivatedFalse = (activated === 'Unsubscribed' && element?.attributes?.activated === false);
-    //                         if (CheckActivatedTrue || CheckActivatedFalse) {
-    //                             isAllTrue = true;
-    //                         }
-    //                         break;
-    //                     default:
-    //                         break;
-    //                 }
-    //             });
-    //             if (isAllTrue) {
-    //                 return element;
-    //             }
-    //         });
-
-    //         setFilterData(temp);
-
-    //         console.log(isActive)
-    //     }
-    // }
 
     const handleFilter = (e, Name) => {
         if (Name === "subdistrict") {
-            setSubdistrict(e.target.value)
-            if (e.target.value === "") {
-                setFilterData(villageData)
-                return
-            }
-            let temp = villageData.filter((element) => {
-                if (element?.attributes?.sub_district?.data?.attributes?.name.toLowerCase().includes(subdistrict.toLowerCase())) {
-                    return element
-                }
-            })
-            setFilterData(temp)
+            setSubdistrict(e.target.value);
+        } else if (Name === "city") {
+            setCity(e.target.value);
+        } else if (Name === "state") {
+            setState(e.target.value);
+        } else if (Name === "activated") {
+            setActivated(e.target.value);
         }
-        else if (Name === "city") {
-            setCity(e.target.value)
-            if (e.target.value === "") {
-                setFilterData(villageData)
-                return
-            }
-            let temp = villageData.filter((element) => {
-                if (element?.attributes?.city?.data?.attributes?.name.toLowerCase().includes(city.toLowerCase())) {
-                    return element
-                }
-            })
-            setFilterData(temp)
-        }
-        else if (Name === "state") {
-            setState(e.target.value)
-            if (e.target.value === "") {
-                setFilterData(villageData)
-                return
-            }
-            let temp = villageData.filter((element) => {
-                if (element?.attributes?.state?.data?.attributes?.name.toLowerCase().includes(state.toLowerCase())) {
-                    return element
-                }
-            })
-            setFilterData(temp)
-        }
-        else if (Name == "activated") {
-            setActivated(e.target.value)
-            if (e.target.value === "") {
-                setFilterData(villageData)
-                return
-            }
+    };
 
-            let temp = villageData.filter((element) => {
-                if (e.target.value === "Subscribed" && element?.attributes?.activated == true) {
-                    return element
-                }
-                else if (e.target.value === "Unsubscribed" && element?.attributes?.activated == false) {
-                    return element
-                }
-            })
-            setFilterData(temp)
-        }
-    }
+    useEffect(() => {
+        let temp = villageData.filter((element) => {
+            let CheckSubDistrict =
+                subdistrict !== ""
+                    ? element?.attributes?.sub_district?.data?.attributes?.name
+                        .toLowerCase()
+                        .includes(subdistrict.toLowerCase())
+                    : true;
+            let CheckCity =
+                city !== ""
+                    ? element?.attributes?.city?.data?.attributes?.name
+                        .toLowerCase()
+                        .includes(city.toLowerCase())
+                    : true;
+            let CheckState =
+                state !== ""
+                    ? element?.attributes?.state?.data?.attributes?.name
+                        .toLowerCase()
+                        .includes(state.toLowerCase())
+                    : true;
+            let CheckActivatedTrue =
+                activated === "Subscribed"
+                    ? element?.attributes?.activated === true
+                    : true;
+            let CheckActivatedFalse =
+                activated === "Unsubscribed"
+                    ? element?.attributes?.activated === false
+                    : true;
+
+            return (
+                CheckSubDistrict &&
+                CheckCity &&
+                CheckState &&
+                CheckActivatedTrue &&
+                CheckActivatedFalse
+            );
+        });
+
+        setFilterData(temp);
+    }, [subdistrict, city, state, activated]);
+
+
 
     // TODO: checkboxes
     const [checkedItems, setCheckedItems] = useState([]);
@@ -223,19 +136,22 @@ const Village = () => {
                 return;
             }
 
-            const data = {
-                "url": url
+            const body = {
+                data: {
+                    url
+                }
             }
-
+            // console.log(JSON.stringify(body))
             try {
-                const url = `${process.env.NEXT_PUBLIC_URL}/api/fetch-metadata`
+                const url = `${process.env.NEXT_PUBLIC_URL}/api/fetch-metadata`;
                 const token = localStorage.getItem("UserToken")
                 const requestOptions = {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: { "data": data },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
+                    body: JSON.stringify(body),
                 }
                 const responseJson = await fetch(url, requestOptions);
+                console.log({ responseJson });
                 const response = await responseJson.json();
                 console.log(response)
                 if (response?.id) {
