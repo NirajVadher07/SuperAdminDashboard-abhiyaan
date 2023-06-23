@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
 
-//TODO: DEFINING VARIABLES
+//➡️➡️➡️ TODO: DEFINING VARIABLES 
 const SUBDISTRICT = "subdistrict"
 const CITY ="city"
 const STATE ="state"
@@ -19,7 +19,7 @@ const UNSUBSCRIBED = "unsubscribed"
 const Village = () => {
     const router = useRouter()
 
-    // TODO: fetching intial data
+    //➡️➡️➡️ TODO: fetching intial data
     const [villageData, setVillageData] = useState([])
     const fetchData = async () => {
         try {
@@ -39,7 +39,7 @@ const Village = () => {
         }
     }
 
-    // TODO: checking Auth and fetching data
+    //➡️➡️➡️ TODO: checking Auth and fetching data
     useEffect(() => {
         if (checkAuth()) {
             fetchData()
@@ -50,7 +50,7 @@ const Village = () => {
     }, [])
 
 
-    // TODO: Filters
+    //➡️➡️➡️ TODO: Filters
     const [subdistrict, setSubdistrict] = useState("")
     const [city, setCity] = useState("")
     const [state, setState] = useState("")
@@ -70,6 +70,11 @@ const Village = () => {
 
     useEffect(() => {
         let temp = villageData.filter((element) => {
+            if(subdistrict && !element?.attributes?.sub_district?.data?.attributes?.name
+                .toLowerCase()
+                .includes(subdistrict.toLowerCase())){
+                    return false;
+                }
             let CheckSubDistrict =
                 subdistrict !== ""
                     ? element?.attributes?.sub_district?.data?.attributes?.name
@@ -97,6 +102,8 @@ const Village = () => {
                     ? element?.attributes?.activated === false
                     : true;
 
+            return true;
+
             return (
                 CheckSubDistrict &&
                 CheckCity &&
@@ -109,8 +116,8 @@ const Village = () => {
         setFilterData(temp);
     }, [subdistrict, city, state, activated]);
 
-    
-    // TODO: checkboxes
+
+    //➡️➡️➡️ TODO: checkboxes
     const [checkedItems, setCheckedItems] = useState([]);
     const handleCheckboxChange = (e) => {
         const { value, checked } = e.target;
@@ -121,16 +128,16 @@ const Village = () => {
         }
     };
 
-    // TODO: dropdown 
+    //➡️➡️➡️ TODO: dropdown 
     const [Dropdown, SetDropdown] = useState("Notice")
     const handleDropdownChange = (e) => {
         SetDropdown(e.target.value);
     };
 
-    // TODO: URL state
+    //➡️➡️➡️ TODO: URL state
     const [url, setUrl] = useState("")
 
-    // TODO: HandleNoticeNews 
+    //➡️➡️➡️ TODO: HandleNoticeNews 
     const HandleNoticeNews = async () => {
         if (Dropdown == "news") {
             if (checkedItems.length == 0) {
@@ -179,7 +186,7 @@ const Village = () => {
         <div className='flex justify-center items-start'>
             <ToastContainer />
             <div className="w-3/4 min-h-[70vh] p-2 flex flex-col justify-start items-center">
-                {/* Filters */}
+                {/*➡️➡️➡️ Filters */}
                 <div className='w-full mb-5 px-5 flex justify-center items-center'>
                     <div className='flex justify-center items-center w-1/6'>
                         <FaFilter className='text-2xl mx-2' />
@@ -201,7 +208,7 @@ const Village = () => {
                         </select>
                     </div>
                 </div>
-                {/* display of data */}
+                {/* ➡️➡️➡️ display of data */}
                 <div className="h-fit relative overflow-x-auto shadow-md sm:rounded-lg">
                     <table className="w-full text-sm ">
                         <thead className="text-xs text-black uppercase bg-gray-300">
@@ -262,7 +269,7 @@ const Village = () => {
                     </table>
                 </div>
             </div>
-            {/* Form  */}
+            {/* ➡️➡️➡️ Form  */}
             <div className='w-1/4 flex flex-col justify-start items-start p-5'>
                 <h1 className='w-full text-center font-semibold text-xl'>ENTER DETAILS</h1>
                 <div className='w-full flex justify-evenly items-center mt-2'>
@@ -309,7 +316,7 @@ const Village = () => {
         </div>
 
     ) : (
-        // Loader
+        // ➡️➡️➡️ Loader
         <div className="min-h-[70vh] p-2 flex justify-center items-start animate-pulse">
             <div className="h-fit relative overflow-x-auto shadow-md sm:rounded-lg w-3/4">
                 <table className="w-full text-sm ">
