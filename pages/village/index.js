@@ -7,6 +7,15 @@ import { BsDatabaseFillExclamation } from "react-icons/bs"
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
+
+//TODO: DEFINING VARIABLES
+const SUBDISTRICT = "subdistrict"
+const CITY ="city"
+const STATE ="state"
+const ACTIVATED = "activated"
+const SUBSCRIBED = "subscribed"
+const UNSUBSCRIBED = "unsubscribed"
+
 const Village = () => {
     const router = useRouter()
 
@@ -47,16 +56,14 @@ const Village = () => {
     const [state, setState] = useState("")
     const [activated, setActivated] = useState("")
     const [filterData, setFilterData] = useState([])
-
-
     const handleFilter = (e, Name) => {
-        if (Name === "subdistrict") {
+        if (Name === SUBDISTRICT) {
             setSubdistrict(e.target.value);
-        } else if (Name === "city") {
+        } else if (Name === CITY) {
             setCity(e.target.value);
-        } else if (Name === "state") {
+        } else if (Name === STATE) {
             setState(e.target.value);
-        } else if (Name === "activated") {
+        } else if (Name === ACTIVATED) {
             setActivated(e.target.value);
         }
     };
@@ -82,11 +89,11 @@ const Village = () => {
                         .includes(state.toLowerCase())
                     : true;
             let CheckActivatedTrue =
-                activated === "Subscribed"
+                activated === SUBSCRIBED
                     ? element?.attributes?.activated === true
                     : true;
             let CheckActivatedFalse =
-                activated === "Unsubscribed"
+                activated === UNSUBSCRIBED
                     ? element?.attributes?.activated === false
                     : true;
 
@@ -102,8 +109,7 @@ const Village = () => {
         setFilterData(temp);
     }, [subdistrict, city, state, activated]);
 
-
-
+    
     // TODO: checkboxes
     const [checkedItems, setCheckedItems] = useState([]);
     const handleCheckboxChange = (e) => {
@@ -182,16 +188,16 @@ const Village = () => {
                         </h1>
                     </div>
                     <div className='flex justify-evenly items-center w-5/6'>
-                        <input type="text" id="sub-district" placeholder='Sub-District' value={subdistrict} onChange={(e) => { handleFilter(e, "subdistrict") }} className="w-1/4 mx-1 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2" />
+                        <input type="text" id="sub-district" placeholder='Sub-District' autoComplete='off'  value={subdistrict} onChange={(e) => { handleFilter(e, "subdistrict") }} className="w-1/4 mx-1 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2" />
 
-                        <input type="text" id="city" placeholder='City' value={city} onChange={(e) => { handleFilter(e, "city") }} className="w-1/4 mx-1 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2" />
+                        <input type="text" id="city" placeholder='City' autoComplete='off'  value={city} onChange={(e) => { handleFilter(e, "city") }} className="w-1/4 mx-1 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2" />
 
-                        <input type="text" id="state" placeholder='State' value={state} onChange={(e) => { handleFilter(e, "state") }} className="w-1/4 mx-1 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2" />
+                        <input type="text" id="state" placeholder='State' autoComplete='off' value={state} onChange={(e) => { handleFilter(e, "state") }} className="w-1/4 mx-1 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2" />
 
                         <select value={activated} onChange={(e) => { handleFilter(e, "activated") }} className='w-1/4 mx-1 py-3 p-2.5 mt-2 rounded-lg border-gray-300 border-2 bg-gray-50 text-md'>
                             <option value="" className='w-full text-gray-700 block px-4 py-2 text-lg'>None</option>
-                            <option value="Subscribed" className='w-full text-gray-700 block px-4 py-2 text-lg'>Subscribed</option>
-                            <option value="Unsubscribed" className='w-full text-gray-700 block px-4 py-2 text-lg'>Unsubscribed</option>
+                            <option value={SUBSCRIBED} className='w-full text-gray-700 block px-4 py-2 text-lg'>Subscribed</option>
+                            <option value={UNSUBSCRIBED} className='w-full text-gray-700 block px-4 py-2 text-lg'>Unsubscribed</option>
                         </select>
                     </div>
                 </div>
@@ -275,7 +281,7 @@ const Village = () => {
                         Dropdown === "news" ? (
                             <div className='m-2 w-full'>
                                 <h1 className='font-bold text-xl text-[#590DE1]'>URL</h1>
-                                <input type="text" id="url" placeholder='enter your URL of news' value={url} onChange={(e) => { setUrl(e.target.value) }} className="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block w-full p-2.5 mt-2" />
+                                <input type="text" id="url" placeholder='enter your URL of news' value={url} autoComplete='off'  onChange={(e) => { setUrl(e.target.value) }} className="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block w-full p-2.5 mt-2" />
                             </div>
                         ) : (
                             <div className='m-2 w-full'>
