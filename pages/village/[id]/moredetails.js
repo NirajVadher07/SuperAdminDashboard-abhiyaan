@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import checkAuth from '@/pages/utils/checkAuth'
 import Link from 'next/link'
+import Notice from '@/pages/components/Notice'
+import Complaint from '@/pages/components/Complaint'
+import News from '@/pages/components/News'
 
 const MoreDetails = () => {
   const router = useRouter()
@@ -62,13 +65,18 @@ const MoreDetails = () => {
                   <div className='w-full p-2 mt-2'>
                     {details.map((detail, index) => {
                       return (
-                        <div id={index} className='flex justify-center items-center border-b-2 border-black p-2 mt-2'>
-                          <div className='w-1/4 text-center text-2xl font-semibold px-2'>
-                            {name === "notices" ? detail?.attributes?.heading : detail?.attributes?.title}
-                          </div>
-                          <div className='w-3/4'>
-                            {detail?.attributes?.description ? detail?.attributes?.description : "No decription Provided"}
-                          </div>
+                        <div>
+                          {name == "notices" ? (
+                            <Notice
+                              index={index}
+                              heading={detail?.attributes?.heading}
+                              description={detail?.attributes?.description} />
+                          ) : (
+                            <Complaint
+                              index={index}
+                              title={detail?.attributes?.title}
+                              description={detail?.attributes?.description} />
+                          )}
                         </div>
                       )
                     })}
@@ -90,21 +98,13 @@ const MoreDetails = () => {
                   <div className='w-full p-2 mt-2 flex flex-wrap justify-evenly items-start'>
                     {details.map((news, index) => {
                       return (
-                        <div id={index} className="w-1/4 min-h-[600px] mx-2 flex flex-col justify-between rounded overflow-hidden shadow-lg my-2">
-                          <div>
-                            <img className="w-full" style={{ height: "250px" }} src={news?.attributes?.image != null ? news?.attributes?.image : "/news.jpg"} alt="news image" />
-                            <div className="px-6 py-4">
-                              <div className="font-bold text-xl mb-2">{news?.attributes?.title?.substring(0, 100)}..</div>
-                              <p className="text-gray-700 text-base">
-                                {news?.attributes?.description?.substring(0, 230)}...
-                              </p>
-                            </div>
-                          </div>
-                          <div className="px-6 pt-4 pb-2 flex justify-evenly flex-wrap">
-                            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{news?.attributes?.source ? news?.attributes?.source : "NA"}</span>
-                            <Link href={news?.attributes?.url ? news?.attributes?.url : "#"} className=" cursor-pointer inline-block bg-[#590DE1] rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Read More</Link>
-                          </div>
-                        </div>
+                        <News
+                          index={index}
+                          image={news?.attributes?.image}
+                          title={news?.attributes?.title}
+                          description={news?.attributes?.description}
+                          source={news?.attributes?.source}
+                          url={news?.attributes?.url} />                                       
                       )
                     })}
                   </div>

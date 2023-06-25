@@ -50,7 +50,7 @@ const Login = () => {
     return (
         <div className='flex flex-col justify-center items-center min-h-screen'>
             <ToastContainer />
-            <div className="shadow-2xl rounded-lg w-1/3 p-5">
+            <div className="shadow-2xl rounded-lg w-full m-5 lg:w-1/3 p-5">
                 <div className='flex justify-center items-center my-2'>
                     <Link href={"/"}>
                         <Image src={"/icon.png"} width={300} height={100} alt="Picture of the author" />
@@ -72,7 +72,7 @@ const Login = () => {
                             </div>
                         </div>
                         <div className='py-5 flex justify-center items-center'>
-                            <button type="submit" className="w-1/2 bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 border border-[#590DE1] hover:border-transparent rounded-lg">Log-In</button>
+                            <button type="submit" className="min-w-fit bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-5 lg:px-10 border border-[#590DE1] hover:border-transparent rounded-lg">Log-In</button>
                         </div>
                     </form>
                 </div>

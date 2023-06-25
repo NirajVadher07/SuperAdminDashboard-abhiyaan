@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }) {
   const shouldRenderHeaderFooter = !hideHeaderFooterPaths.includes(router.pathname);
 
   return (
-    <div className="bg-white text-black min-h-screen">
+    <div className="bg-white text-black min-h-screen min-w-screen">
       {shouldRenderHeaderFooter && <Header />}
       <Component {...pageProps} />
       {shouldRenderHeaderFooter && <Footer />}

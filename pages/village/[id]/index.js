@@ -6,6 +6,10 @@ import Loader from '@/pages/components/Loader'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import ImageSlider from '@/pages/components/ImageSlider'
+import Notice from '@/pages/components/Notice'
+import Complaint from '@/pages/components/Complaint'
+import News from '@/pages/components/News'
+import MemberCard from '@/pages/components/MemberCard'
 
 const VillageDetails = () => {
     const router = useRouter()
@@ -41,9 +45,6 @@ const VillageDetails = () => {
         fetchData()
     }, [router?.query?.id])
 
-    // attributes?.members?.data?.map((member)=>{
-    //     console.log(member?.id, "-",member?.attributes?.lastname)
-    // })
 
     return (
         <div className='text-black'>
@@ -52,20 +53,20 @@ const VillageDetails = () => {
                 attributes ? (
                     <div className='min-h-[100vh] mt-2'>
                         {/* village name and other information */}
-                        <div className={`p-2 flex justify-evenly items-center ${attributes?.activated ? ("bg-green-500") : ("bg-red-500")} bg-green-500 text-white`}>
-                            <div className='text-3xl font-bold flex flex-col justify-center items-center'>
+                        <div className={`p-2 flex justify-evenly items-center flex-wrap ${attributes?.activated ? ("bg-green-500") : ("bg-red-500")} bg-green-500 text-white`}>
+                            <div className='sm:w-1/2 lg:w-1/4 sm:my-2 lg:my-0 sm:text-xl lg:text-3xl font-bold flex flex-col justify-center items-center'>
                                 {attributes?.name ? (attributes?.name) : ("---")}
                                 <span className='text-xs font-semibold text-gray-300'>Village</span>
                             </div>
-                            <div className='text-3xl font-bold flex flex-col justify-center items-center'>
+                            <div className='sm:w-1/2 lg:w-1/4 sm:my-2 lg:my-0 sm:text-xl lg:text-3xl font-bold flex flex-col justify-center items-center'>
                                 {attributes?.sub_district?.data?.attributes?.name ? (attributes?.sub_district?.data?.attributes?.name) : ("---")}
                                 <span className='text-xs font-semibold text-gray-300'>Sub District</span>
                             </div>
-                            <div className='text-3xl font-bold flex flex-col justify-center items-center'>
+                            <div className='sm:w-1/2 lg:w-1/4 sm:my-2 lg:my-0 sm:text-xl lg:text-3xl font-bold flex flex-col justify-center items-center'>
                                 {attributes?.city?.data?.attributes?.name ? (attributes?.city?.data?.attributes?.name) : ("---")}
                                 <span className='text-xs font-semibold text-gray-300'>City</span>
                             </div>
-                            <div className='text-3xl font-bold flex flex-col justify-center items-center'>
+                            <div className='sm:w-1/2 lg:w-1/4 sm:my-2 lg:my-0 sm:text-xl lg:text-3xl font-bold flex flex-col justify-center items-center'>
                                 {attributes?.state?.data?.attributes?.name ? (attributes?.state?.data?.attributes?.name) : ("---")}
                                 <span className='text-xs font-semibold text-gray-300'>State</span>
                             </div>
@@ -80,17 +81,15 @@ const VillageDetails = () => {
                             <div className='p-2 flex flex-wrap justify-evenly items-center'>
                                 {/* {attributes?.members?.data.length} */}
                                 {attributes?.members?.data && attributes?.members?.data.length != 0 && attributes?.members?.data?.map((member, index) => {
-                                    return (<div id={index} className='flex flex-col justify-center item-center border-2 border-gray-600 rounded-lg p-2 min-w-[200px] mx-2 my-1'>
-                                        <h1 className='text-center text-lg'>
-                                            {`${member?.attributes?.firstname} ${member?.attributes?.lastname}`}
-                                        </h1>
-                                        <h2 className='text-center text-md'>
-                                            {member?.attributes?.mobile ? member?.attributes?.mobile : "---"}
-                                        </h2>
-                                        <h3 className='text-center text-xs'>
-                                            {member?.attributes?.occupation ? member?.attributes?.occupation : "---"}
-                                        </h3>
-                                    </div>)
+                                    return (
+                                        <MemberCard
+                                            index={index}
+                                            firstname={member?.attributes?.firstname}
+                                            lastname={member?.attributes?.lastname}
+                                            mobileNumber={member?.attributes?.mobile}
+                                            occupation={member?.attributes?.occupation}
+                                        />
+                                    )
                                 })}
                             </div>
                             {attributes?.members?.data.length === 0 ? (
@@ -110,14 +109,10 @@ const VillageDetails = () => {
                                 {attributes?.notices?.data && attributes?.notices?.data.length != 0 && attributes?.notices?.data?.map((notice, index) => {
                                     return index < 5 ? (
                                         (
-                                            <div id={index} className='flex justify-center items-center border-b-2 border-black p-2 mt-2'>
-                                                <div className='w-1/4 text-center text-2xl font-semibold px-2'>
-                                                    {notice?.attributes?.heading}
-                                                </div>
-                                                <div className='w-3/4'>
-                                                    {notice?.attributes?.description ? notice?.attributes?.description : "No decription Provided"}
-                                                </div>
-                                            </div>
+                                            <Notice
+                                                index={index}
+                                                heading={notice?.attributes?.heading}
+                                                description={notice?.attributes?.description} />
                                         )
                                     ) : (
                                         ""
@@ -150,14 +145,11 @@ const VillageDetails = () => {
                             <div className='w-full p-2 mt-2'>
                                 {attributes?.complaints?.data && attributes?.complaints?.data.length != 0 && attributes?.complaints?.data?.map((complaint, index) => {
                                     return index < 5 ? (
-                                        <div id={index} className='flex justify-center items-center border-b-2 border-black p-2 mt-2'>
-                                            <div className='w-1/4 text-center text-2xl font-semibold px-2'>
-                                                {complaint?.attributes?.title}
-                                            </div>
-                                            <div className='w-3/4'>
-                                                {complaint?.attributes?.description ? complaint?.attributes?.description : "No decription Provided"}
-                                            </div>
-                                        </div>
+                                        <Complaint 
+                                        index={index} 
+                                        title={complaint?.attributes?.title} 
+                                        description={complaint?.attributes?.description} />                                        
+                                        
                                     ) : (
                                         ""
                                     )
@@ -186,23 +178,17 @@ const VillageDetails = () => {
                                     News
                                 </h1>
                             </div>
-                            <div className='w-full p-2 mt-2 flex justify-evenly items-start'>
+                            <div className='w-full p-2 mt-2 flex flex-col lg:flex-row justify-evenly items-start'>
                                 {attributes?.news?.data && attributes?.news?.data.length != 0 && attributes?.news?.data?.map((news, index) => {
                                     return index < 3 ?
                                         (
-                                            <div className="w-1/4 min-h-[600px] mx-2 my-2 rounded flex flex-col justify-evenly overflow-hidden shadow-lg">
-                                                <img className="w-full" style={{ height: "250px" }} src={news?.attributes?.image != null ? news?.attributes?.image : "/news.jpg"} alt="news image" />
-                                                <div className="px-6 py-4">
-                                                    <div className="font-bold text-xl mb-2">{news?.attributes?.title.substring(0, 100)}..</div>
-                                                    <p className="text-gray-700 text-base">
-                                                        {news?.attributes?.description.substring(0, 230)}...
-                                                    </p>
-                                                </div>
-                                                <div className="px-6 pt-4 pb-2 flex justify-evenly">
-                                                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{news?.attributes?.source ? news?.attributes?.source : "NA"}</span>
-                                                    <Link href={news?.attributes?.url ? news?.attributes?.url : "#"} className=" cursor-pointer inline-block bg-[#590DE1] rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Read More</Link>
-                                                </div>
-                                            </div>
+                                            <News 
+                                            index={index} 
+                                            image={news?.attributes?.image} 
+                                            title={news?.attributes?.title} 
+                                            description={news?.attributes?.description} 
+                                            source={news?.attributes?.source} 
+                                            url={news?.attributes?.url} />
                                         ) : (
                                             " "
                                         )
