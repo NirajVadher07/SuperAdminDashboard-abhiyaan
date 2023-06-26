@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import checkAuth from '@/pages/utils/checkAuth'
-import Link from 'next/link'
 import Notice from '@/pages/components/Notice'
 import Complaint from '@/pages/components/Complaint'
 import News from '@/pages/components/News'
 
-const MoreDetails = () => {
+export const getServerSideProps = async (context) => {
+  const { query } = context;
+  return { props: { query } };
+}
+
+const MoreDetails = ({ query }) => {
   const router = useRouter()
   const [name, setName] = useState("")
   const [details, setDetails] = useState([])
   const fetchData = async () => {
     try {
-      const Id = router?.query?.Id;
-      const Name = router?.query?.Name;
-      console.log(Id, Name)
+      const Id = query.Id;
+      const Name = query.Name;
       const url = `${process.env.URL}/api/villages/${Id}?populate=*`;
       const token = localStorage.getItem("UserToken")
       const requestOptions = {
@@ -37,17 +40,15 @@ const MoreDetails = () => {
     }
   }
 
+
   useEffect(() => {
     if (!checkAuth()) {
       router.push("/auth/login")
     }
+    else {
+      fetchData()
+    }
   }, [])
-
-  useEffect(() => {
-    fetchData()
-  }, [router?.query?.Id, router?.query?.Name])
-
-  console.log(details)
 
   return (
     <div>
@@ -100,11 +101,13 @@ const MoreDetails = () => {
                       return (
                         <News
                           index={index}
+                          newsId={news?.id}
+                          villageId={router?.query?.id}
                           image={news?.attributes?.image}
                           title={news?.attributes?.title}
                           description={news?.attributes?.description}
                           source={news?.attributes?.source}
-                          url={news?.attributes?.url} />                                       
+                          url={news?.attributes?.url} />
                       )
                     })}
                   </div>

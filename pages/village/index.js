@@ -8,19 +8,42 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
 
-//➡️➡️➡️ TODO: DEFINING VARIABLES 
+//  TODO: DEFINING VARIABLES 
 const SUBDISTRICT = "subdistrict"
 const CITY = "city"
 const STATE = "state"
 const ACTIVATED = "activated"
 const SUBSCRIBED = "subscribed"
 const UNSUBSCRIBED = "unsubscribed"
+const NOTICE = "notice"
+const NEWS = "news"
 
 const Village = () => {
     const router = useRouter()
 
-    //➡️➡️➡️ TODO: fetching intial data
+    //  TODO: fetching intial data
     const [villageData, setVillageData] = useState([])
+
+    //  TODO: Filters
+    const [subdistrict, setSubdistrict] = useState("")
+    const [city, setCity] = useState("")
+    const [state, setState] = useState("")
+    const [activated, setActivated] = useState("")
+    const [filterData, setFilterData] = useState([])
+    const [isSelectedAll, setIsSelectedAll] = useState(false)
+
+    //  TODO: checkboxes
+    const [checkedItems, setCheckedItems] = useState([]);
+
+    //  TODO: dropdown 
+    const [Dropdown, SetDropdown] = useState(NOTICE)
+
+    //  TODO: NEWS URL state
+    const [url, setUrl] = useState("")
+
+    //  TODO: NOTICE state    
+
+
     const fetchData = async () => {
         try {
             const url = `${process.env.NEXT_PUBLIC_URL}/api/villages?populate=*`
@@ -39,23 +62,6 @@ const Village = () => {
         }
     }
 
-    //➡️➡️➡️ TODO: checking Auth and fetching data
-    useEffect(() => {
-        if (checkAuth()) {
-            fetchData()
-        }
-        else {
-            router.push("/auth/login")
-        }
-    }, [])
-
-
-    //➡️➡️➡️ TODO: Filters
-    const [subdistrict, setSubdistrict] = useState("")
-    const [city, setCity] = useState("")
-    const [state, setState] = useState("")
-    const [activated, setActivated] = useState("")
-    const [filterData, setFilterData] = useState([])
     const handleFilter = (e, Name) => {
         if (Name === SUBDISTRICT) {
             setSubdistrict(e.target.value);
@@ -68,13 +74,8 @@ const Village = () => {
         }
     };
 
-    useEffect(() => {
+    const FilterOutData = () => {
         let temp = villageData.filter((element) => {
-            // if(subdistrict && !element?.attributes?.sub_district?.data?.attributes?.name
-            //     .toLowerCase()
-            //     .includes(subdistrict.toLowerCase())){
-            //         return false;
-            //     }                
             let CheckSubDistrict =
                 subdistrict !== ""
                     ? element?.attributes?.sub_district?.data?.attributes?.name
@@ -114,38 +115,51 @@ const Village = () => {
         });
 
         setFilterData(temp);
-    }, [subdistrict, city, state, activated]);
+    }
 
+    const CheckIsSelectedAll = () => {
+        if (isSelectedAll) {
+            setCheckedItems([])
+            setIsSelectedAll(!isSelectedAll)
+        }
+        else {
+            if (filterData.length != 0) {
+                filterData.map((element) => {
+                    setCheckedItems((prevValues) => [...prevValues, (element?.id.toString())]);
+                })
+                setIsSelectedAll(!isSelectedAll)
+            }
+            else {
+                toast.warning("No data Avaliable")
+                return
+            }
 
-    //➡️➡️➡️ TODO: checkboxes
-    const [checkedItems, setCheckedItems] = useState([]);
+        }
+    }
+
     const handleCheckboxChange = (e) => {
         const { value, checked } = e.target;
         if (checked) {
-            setCheckedItems((prevValues) => [...prevValues, parseInt(value)]);
+            setCheckedItems((prevValues) => [...prevValues, (value.toString())]);
         } else {
-            setCheckedItems((prevValues) => prevValues.filter((val) => val !== parseInt(value)));
+            setCheckedItems((prevValues) => prevValues.filter((val) => val !== (value.toString())));
         }
     };
 
-    //➡️➡️➡️ TODO: dropdown 
-    const [Dropdown, SetDropdown] = useState("Notice")
     const handleDropdownChange = (e) => {
         SetDropdown(e.target.value);
     };
 
-    //➡️➡️➡️ TODO: URL state
-    const [url, setUrl] = useState("")
-
-    //➡️➡️➡️ TODO: HandleNoticeNews 
+    //  TODO: HandleNoticeNews 
     const HandleNoticeNews = async () => {
-        if (Dropdown == "news") {
-            if (checkedItems.length == 0) {
-                toast.error("Please Select Any Villages")
-                return;
-            }
+        if (checkedItems.length == 0) {
+            toast.warning("Please Select Any Villages")
+            return;
+        }
+
+        if (Dropdown == NEWS) {
             if (url == "") {
-                toast.error("Empty URL")
+                toast.warning("Empty URL")
                 return;
             }
 
@@ -171,7 +185,7 @@ const Village = () => {
                     toast.success("News Added SuccessFully")
                 }
                 else {
-                    toast.error("Something went wrong")
+                    toast.warning("Something went wrong")
                 }
 
             } catch (error) {
@@ -179,15 +193,33 @@ const Village = () => {
             }
 
         }
+        else if (Dropdown == NOTICE) {
+            console.log(NOTICE)
+        }
     }
+
+    //  TODO: checking Auth and fetching data
+    useEffect(() => {
+        if (checkAuth()) {
+            fetchData()
+        }
+        else {
+            router.push("/auth/login")
+        }
+    }, [])
+
+    // TODO: filter Function
+    useEffect(() => {
+        FilterOutData()
+    }, [subdistrict, city, state, activated]);
 
 
     return filterData ? (
         <div className='flex sm:flex-col lg:flex-row justify-center items-start'>
             <ToastContainer />
-            {/* ➡️➡️➡️  Filters and Table Data */}
+            {/*    Filters and Table Data */}
             <div className="sm:w-full lg:w-3/4 min-h-[70vh] p-2 flex flex-col justify-start items-center">
-                {/*➡️➡️➡️ Filters */}
+                {/*  Filters */}
                 <div className="w-full mb-5 px-5 flex flex-col sm:flex-wrap lg:flex-nowrap lg:flex-row justify-center items-center">
                     <div className="flex justify-center items-center w-full lg:w-1/6">
                         <FaFilter className="text-2xl mx-2" />
@@ -232,13 +264,15 @@ const Village = () => {
                         </select>
                     </div>
                 </div>
-                {/* ➡️➡️➡️ display of data */}
-                <div className='flex justify-start items-center overflow-auto rounded-lg shadow-md'>
+                {/*   display of data */}
+                <div className='flex justify-start items-center overflow-auto rounded-lg shadow-md mx-2'>
                     <table className='w-full'>
                         <thead className='bg-gray-50 border-b-2 border-gray-200'>
                             <tr>
                                 <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
-                                    <input type="checkbox" name="checkbox" id="checkbox" />
+                                    <input type="checkbox" name="checkbox" id="checkbox"
+                                        checked={isSelectedAll}
+                                        onChange={CheckIsSelectedAll} />
                                 </th>
                                 <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
                                     village
@@ -269,7 +303,7 @@ const Village = () => {
                                                 <td className="p-3 text-sm whitespace-normal text-center">
                                                     <input type="checkbox" name="village"
                                                         value={element?.id}
-                                                        checked={checkedItems.includes(parseInt(element?.id))}
+                                                        checked={checkedItems.includes((element?.id.toString()))}
                                                         onChange={handleCheckboxChange}
                                                     />
                                                 </td>
@@ -291,41 +325,11 @@ const Village = () => {
                                     </tr>
                                 )
                             }
-
-                            {/* {
-                                filterData.length != 0 ? (
-                                    filterData.map((element) => {
-                                        return (
-                                            <tr id={element?.id} className={`font-medium text-sm text-gray-800 ${element?.attributes?.activated ? ("hover:bg-green-500 hover:text-white") : ("hover:bg-red-500 hover:text-white")}`}>
-                                                <td scope="row" className="p-3 text-sm text-gray-700 whitespace-normal text-center px-6 py-4">
-                                                    <input type="checkbox" name="village"
-                                                        value={element?.id}
-                                                        checked={checkedItems.includes(parseInt(element?.id))}
-                                                        onChange={handleCheckboxChange}
-                                                    />
-                                                </td>
-                                                <ListVillage element={element} />
-                                            </tr>)
-                                    })
-                                ) : (
-                                    <tr className='font-medium text-black' id="empty">
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td className='text-center text-gray-500 font-bold flex justify-evenly items-center px-6 py-4 whitespace-nowrap'>
-                                            <BsDatabaseFillExclamation className='text-3xl mr-2' />No Data
-                                        </td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                )
-                            } */}
                         </tbody>
                     </table>
                 </div>
             </div>
-            {/* ➡️➡️➡️ Form  */}
+            {/*   Form  */}
             <div className="sm:w-full lg:w-1/4 flex flex-col justify-start items-start p-5">
                 <h1 className="w-full text-center font-semibold text-xl">ENTER DETAILS</h1>
                 <div className="w-full flex justify-evenly items-center mt-2">
@@ -334,10 +338,10 @@ const Village = () => {
                         onChange={handleDropdownChange}
                         className="w-1/3 lg:w-2/3 p-2 rounded-lg border-gray-600 border-2"
                     >
-                        <option value="notice" className="w-full text-gray-700 block px-4 py-2 text-lg">
+                        <option value={NOTICE} className="w-full text-gray-700 block px-4 py-2 text-lg">
                             Notice
                         </option>
-                        <option value="news" className="w-full text-gray-700 block px-4 py-2 text-lg">
+                        <option value={NEWS} className="w-full text-gray-700 block px-4 py-2 text-lg">
                             News
                         </option>
                     </select>
@@ -349,7 +353,7 @@ const Village = () => {
                     </button>
                 </div>
                 <div className="w-full">
-                    {Dropdown === "news" ? (
+                    {Dropdown === NEWS ? (
                         <div className="m-2 w-full">
                             <h1 className="font-bold text-xl text-[#590DE1]">URL</h1>
                             <input
@@ -409,7 +413,7 @@ const Village = () => {
         </div>
 
     ) : (
-        // ➡️➡️➡️ Loader
+        //   Loader
         <div className="min-h-[70vh] p-2 flex justify-center items-start animate-pulse">
             <div className="h-fit relative overflow-x-auto shadow-md sm:rounded-lg w-3/4">
                 <table className="w-full text-sm ">

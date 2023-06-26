@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import checkAuth from '@/pages/utils/checkAuth'
 import { useRouter } from 'next/router'
-import Link from 'next/link'
 import Loader from '@/pages/components/Loader'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,14 +10,19 @@ import Complaint from '@/pages/components/Complaint'
 import News from '@/pages/components/News'
 import MemberCard from '@/pages/components/MemberCard'
 
-const VillageDetails = () => {
+export const getServerSideProps = async (context) => {
+    const { query } = context;
+    return { props: { query } };
+}
+
+const VillageDetails = ({ query }) => {
     const router = useRouter()
     const [id, setId] = useState(null)
     const [attributes, setAttributes] = useState({})
 
     const fetchData = async () => {
         try {
-            const Id = router?.query?.id;
+            const Id = query.id;
             const url = `${process.env.URL}/api/villages/${Id}?populate=*`;
             const token = localStorage.getItem("UserToken")
             const requestOptions = {
@@ -35,16 +39,21 @@ const VillageDetails = () => {
         }
     }
 
+    const handleMoreDetails = (Name) => {
+        router.push({
+            pathname: `/village/${id}/moredetails`,
+            query: { Id: id, Name: Name },
+        }, `/village/${id}/moredetails`)
+    }
+
     useEffect(() => {
         if (!checkAuth()) {
             router.push("/auth/login")
         }
+        else {
+            fetchData()
+        }
     }, [])
-
-    useEffect(() => {
-        fetchData()
-    }, [router?.query?.id])
-
 
     return (
         <div className='text-black'>
@@ -119,14 +128,9 @@ const VillageDetails = () => {
                                     )
                                 })}
                                 {attributes?.notices?.data.length != 0 && attributes?.notices?.data.length > 5 ? (
-                                    <Link href={{
-                                        pathname: `/village/${id}/moredetails`,
-                                        query: { Id: id, Name: "notices" },
-                                    }}>
-                                        <button className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                            More Details..
-                                        </button>
-                                    </Link>
+                                    <button onClick={() => { handleMoreDetails("notices") }} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
+                                        More Details..
+                                    </button>
                                 ) : ("")}
                                 {attributes?.notices?.data.length === 0 ? (
                                     <div className='text-center italic font-bold text-xl w-full text-gray-600'>
@@ -145,24 +149,19 @@ const VillageDetails = () => {
                             <div className='w-full p-2 mt-2'>
                                 {attributes?.complaints?.data && attributes?.complaints?.data.length != 0 && attributes?.complaints?.data?.map((complaint, index) => {
                                     return index < 5 ? (
-                                        <Complaint 
-                                        index={index} 
-                                        title={complaint?.attributes?.title} 
-                                        description={complaint?.attributes?.description} />                                        
-                                        
+                                        <Complaint
+                                            index={index}
+                                            title={complaint?.attributes?.title}
+                                            description={complaint?.attributes?.description} />
+
                                     ) : (
                                         ""
                                     )
                                 })}
                                 {attributes?.complaints?.data.length != 0 && attributes?.complaints?.data.length > 5 ? (
-                                    <Link href={{
-                                        pathname: `/village/${id}/moredetails`,
-                                        query: { Id: id, Name: "complaints" },
-                                    }}>
-                                        <button className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                            More Details..
-                                        </button>
-                                    </Link>
+                                    <button onClick={() => { handleMoreDetails("complaints") }} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
+                                        More Details..
+                                    </button>
                                 ) : ("")}
                                 {attributes?.complaints?.data.length === 0 ? (
                                     <div className='text-center italic font-bold text-xl w-full text-gray-600'>
@@ -182,13 +181,15 @@ const VillageDetails = () => {
                                 {attributes?.news?.data && attributes?.news?.data.length != 0 && attributes?.news?.data?.map((news, index) => {
                                     return index < 3 ?
                                         (
-                                            <News 
-                                            index={index} 
-                                            image={news?.attributes?.image} 
-                                            title={news?.attributes?.title} 
-                                            description={news?.attributes?.description} 
-                                            source={news?.attributes?.source} 
-                                            url={news?.attributes?.url} />
+                                            <News
+                                                index={index}
+                                                NewsId={news?.id}
+                                                villageId={router?.query?.id}
+                                                image={news?.attributes?.image}
+                                                title={news?.attributes?.title}
+                                                description={news?.attributes?.description}
+                                                source={news?.attributes?.source}
+                                                url={news?.attributes?.url} />
                                         ) : (
                                             " "
                                         )
@@ -196,14 +197,11 @@ const VillageDetails = () => {
                             </div>
                             <div>
                                 {attributes?.news?.data.length != 0 && attributes?.news?.data.length > 3 ? (
-                                    <Link href={{
-                                        pathname: `/village/${id}/moredetails`,
-                                        query: { Id: id, Name: "news" },
-                                    }} className='p-2 mt-2 '>
-                                        <button className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                            More Details..
-                                        </button>
-                                    </Link>
+                                    <button onClick={() => { handleMoreDetails("news") }}
+                                        className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 mx-5 border border-[#590DE1] hover:border-transparent rounded-lg">
+                                        More Details..
+                                    </button>
+
                                 ) : ("")}
                                 {attributes?.news?.data.length === 0 ? (
                                     <div className='text-center italic font-bold text-xl w-[100vw] text-gray-600'>
