@@ -42,6 +42,9 @@ const Village = () => {
     const [url, setUrl] = useState("")
 
     //  TODO: NOTICE state    
+    const [heading, setHeading] = useState("")
+    const [type, setType] = useState("")
+    const [description, setDescription] = useState("")
 
 
     const fetchData = async () => {
@@ -146,10 +149,6 @@ const Village = () => {
         }
     };
 
-    const handleDropdownChange = (e) => {
-        SetDropdown(e.target.value);
-    };
-
     //  TODO: HandleNoticeNews 
     const HandleNoticeNews = async () => {
         if (checkedItems.length == 0) {
@@ -194,7 +193,44 @@ const Village = () => {
 
         }
         else if (Dropdown == NOTICE) {
-            console.log(NOTICE)
+            if (!(heading && type && description)) {
+                toast.warning("All fields are mandatory")
+                return
+            }
+
+            const body = {
+                data: {
+                    heading,
+                    type,
+                    description,
+                    "village": checkedItems,
+                    "image": "TODO: BE ADDED LATER"
+                }
+            }
+
+            try {
+                const url = `${process.env.NEXT_PUBLIC_URL}/api/announcements`;
+                const token = localStorage.getItem("UserToken")
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
+                    body: JSON.stringify(body),
+                }
+                // const responseJson = await fetch(url, requestOptions);
+                // console.log({ responseJson });
+                // const response = await responseJson.json();
+                // console.log(response)
+                // if (response?.id) {
+                //     toast.success("News Added SuccessFully")
+                // }
+                // else {
+                //     toast.warning("Something went wrong")
+                // }
+
+            } catch (error) {
+                toast.error("Faill to add Notice")
+            }
+
         }
     }
 
@@ -265,7 +301,7 @@ const Village = () => {
                     </div>
                 </div>
                 {/*   display of data */}
-                <div className='flex justify-start items-center overflow-auto rounded-lg shadow-md mx-2'>
+                <div className='flex justify-start items-center overflow-auto rounded-lg shadow-md'>
                     <table className='w-full'>
                         <thead className='bg-gray-50 border-b-2 border-gray-200'>
                             <tr>
@@ -299,16 +335,7 @@ const Village = () => {
                                 filterData.length != 0 ? (
                                     filterData.map((element) => {
                                         return (
-                                            <tr className={`bg-white text-gray-700  hover:text-white ${element?.attributes?.activated == true ? "hover:bg-green-500 " : "hover:bg-red-500"}`}>
-                                                <td className="p-3 text-sm whitespace-normal text-center">
-                                                    <input type="checkbox" name="village"
-                                                        value={element?.id}
-                                                        checked={checkedItems.includes((element?.id.toString()))}
-                                                        onChange={handleCheckboxChange}
-                                                    />
-                                                </td>
-                                                <ListVillage element={element} />
-                                            </tr>
+                                            <ListVillage element={element} checkedItems={checkedItems} handleCheckboxChange={handleCheckboxChange} />
                                         )
                                     })
                                 ) : (
@@ -335,7 +362,7 @@ const Village = () => {
                 <div className="w-full flex justify-evenly items-center mt-2">
                     <select
                         value={Dropdown}
-                        onChange={handleDropdownChange}
+                        onChange={(e) => { SetDropdown(e.target.value); }}
                         className="w-1/3 lg:w-2/3 p-2 rounded-lg border-gray-600 border-2"
                     >
                         <option value={NOTICE} className="w-full text-gray-700 block px-4 py-2 text-lg">
@@ -376,6 +403,8 @@ const Village = () => {
                                     type="text"
                                     id="heading"
                                     placeholder="Heading"
+                                    value={heading}
+                                    onChange={(e) => { setHeading(e.target.value) }}
                                     className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                 />
                             </div>
@@ -385,6 +414,8 @@ const Village = () => {
                                     type="text"
                                     id="type"
                                     placeholder="Type"
+                                    value={type}
+                                    onChange={(e) => { setType(e.target.value) }}
                                     className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                 />
                             </div>
@@ -395,6 +426,8 @@ const Village = () => {
                                     id="desc"
                                     rows="4"
                                     placeholder="Description"
+                                    value={description}
+                                    onChange={(e) => { setDescription(e.target.value) }}
                                     className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                 />
                             </div>
@@ -415,32 +448,11 @@ const Village = () => {
     ) : (
         //   Loader
         <div className="min-h-[70vh] p-2 flex justify-center items-start animate-pulse">
-            <div className="h-fit relative overflow-x-auto shadow-md sm:rounded-lg w-3/4">
-                <table className="w-full text-sm ">
-                    <thead className="text-xs text-black uppercase bg-gray-300">
-                        <tr>
-                            <th scope="col" className="px-6 py-3 text-center">
-                                Village
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-center">
-                                Status
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-right">
-                                Action
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="bg-gray-500 border-b">
-                            <th scope="row" className="h-10">
-                            </th>
-                            <td className="h-10">
-                            </td>
-                            <td className="h-10">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div className='w-2/3 bg-gray-500 mx-2 rounded-lg'>
+
+            </div>
+            <div className='w-1/3 bg-gray-500 mx-2 rounded-lg'>
+
             </div>
         </div>
     )

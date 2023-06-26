@@ -87,7 +87,7 @@ const VillageDetails = ({ query }) => {
                                     Members
                                 </h1>
                             </div>
-                            <div className='p-2 flex flex-wrap justify-evenly items-center'>
+                            <div className='p-2 flex flex-wrap justify-evenly items-center w-full'>
                                 {/* {attributes?.members?.data.length} */}
                                 {attributes?.members?.data && attributes?.members?.data.length != 0 && attributes?.members?.data?.map((member, index) => {
                                     return (

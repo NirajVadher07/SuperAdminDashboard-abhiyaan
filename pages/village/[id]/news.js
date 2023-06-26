@@ -9,7 +9,7 @@ export const getServerSideProps = async (context) => {
   return { props: { query } };
 }
 
-const news = ({query}) => {
+const news = ({ query }) => {
   const router = useRouter()
   const [newsId, setNewsId] = useState("")
   const [details, setDetails] = useState([])
@@ -39,11 +39,11 @@ const news = ({query}) => {
     if (!checkAuth()) {
       router.push("/auth/login")
     }
-    else{
+    else {
       fetchData()
     }
   }, [])
-  
+
   return (
     <div>
       {
