@@ -6,7 +6,7 @@ import { FaFilter } from "react-icons/fa"
 import { BsDatabaseFillExclamation } from "react-icons/bs"
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import { FormData } from 'formdata-node';
+// import { FormData } from 'formdata-node';
 
 
 //  TODO: DEFINING VARIABLES 
@@ -18,12 +18,15 @@ const SUBSCRIBED = "subscribed"
 const UNSUBSCRIBED = "unsubscribed"
 const NOTICE = "notice"
 const NEWS = "news"
+const WITHURL = 'withurl'
+const WITHOUTURL = "withouturl"
 
 const Village = () => {
     const router = useRouter()
 
     //  TODO: fetching intial data
     const [villageData, setVillageData] = useState([])
+    const [allnewscatogory, setAllNewsCatogory] = useState([])
 
     //  TODO: Filters
     const [subdistrict, setSubdistrict] = useState("")
@@ -40,19 +43,27 @@ const Village = () => {
     const [Dropdown, SetDropdown] = useState(NOTICE)
 
     //  TODO: NEWS URL state
+    const [newtype, setNewtype] = useState(WITHURL)
     const [url, setUrl] = useState("")
+    const [newstitle, setNewsTitle] = useState("")
+    const [newsdescription, setNewsDescription] = useState("")
+    const [newsauthor, setNewsAuthor] = useState("")
+    const [newssource, setNewsSource] = useState("")
+    const [newscatogory, setNewsCatogory] = useState(allnewscatogory[0]?.id);
+    const [newsimage, setNewsImage] = useState()
 
     //  TODO: NOTICE state    
-    const [heading, setHeading] = useState("")
-    const [type, setType] = useState("")
-    const [description, setDescription] = useState("")
+    const [noticeheading, setNoticeHeading] = useState("")
+    const [noticetype, setNoticeType] = useState("")
+    const [noticedescription, setNoticeDescription] = useState("")
+    const [noticeimage, setNoticeImage] = useState()
 
 
     const fetchData = async () => {
         try {
-            const url = `${process.env.NEXT_PUBLIC_URL}/api/villages?populate=*`
+            let url = `${process.env.NEXT_PUBLIC_URL}/api/villages?populate=*`
             const token = localStorage.getItem("UserToken")
-            const requestOptions = {
+            let requestOptions = {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             }
@@ -60,6 +71,13 @@ const Village = () => {
             const response = await responseJson.json();
             setVillageData(response.data);
             setFilterData(response.data);
+
+
+            url = `${process.env.NEXT_PUBLIC_URL}/api/news-categories`
+            const newCatorgoryResponseJson = await fetch(url, requestOptions)
+            const newCatorgoryResponse = await newCatorgoryResponseJson.json()
+            setAllNewsCatogory(newCatorgoryResponse.data)
+
         } catch (error) {
             toast.error("Fail to Fetech data")
             console.log("Fetch Data Error : ", error)
@@ -138,125 +156,162 @@ const Village = () => {
         }
     };
 
+    const handleNoticeImageFile = () => {
+        const fileInput = document.getElementById('FileNoticeInput');
+        const image = fileInput.files[0];
+        setNoticeImage(image)
+        uploadImage(image, 1)
+    }
+
+    const handleNewsImageFile = () => {
+        const fileInput = document.getElementById('FileNewsInput');
+        const image = fileInput.files[0];
+        setNewsImage(image)
+    }
+
+    const hanldeFocus = (condition) => {
+        const newsform = document.getElementById("NewsForm")
+        const urlDiv = document.getElementById("urlDiv")
+        if (condition == "url") {
+            newsform.classList.add("opacity-30")
+            urlDiv.classList.remove("opacity-30")
+            setNewtype(WITHURL)
+        }
+        else if (condition == "noturl") {
+            urlDiv.classList.add("opacity-30")
+            newsform.classList.remove("opacity-30")
+            setNewtype(WITHOUTURL)
+        }
+    }
+
+    const uploadImage = async (image, villageId) => {
+        try {
+            const url = `${process.env.NEXT_PUBLIC_URL}/api/upload`
+            const token = localStorage.getItem("UserToken")
+
+
+            let formdata = new FormData();
+            formdata.append("files", image);
+            formdata.append("village", villageId);
+
+            console.log(image)
+            formdata.forEach((value, key) => {
+                console.log("key %s: value %s", key, value);
+            })
+
+
+            var requestOptions = {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formdata,
+
+            };
+            const responseJson = await fetch(url, requestOptions)
+            const response = await responseJson.json()
+            console.log(response)
+            toast.info("AFTER QUERY...")
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+
+
     //  TODO: HandleNoticeNews 
     const HandleNoticeNews = async () => {
         if (checkedItems.length == 0) {
             toast.warning("Please Select Any Villages")
             return;
         }
+        else {
+            if (Dropdown == NEWS) {
+                if (newtype === WITHURL) {
+                    if (url == "") {
+                        toast.warning("Empty URL")
+                        return;
+                    }
 
-        if (Dropdown == NEWS) {
-            if (url == "") {
-                toast.warning("Empty URL")
-                return;
-            }
+                    const body = {
+                        data: {
+                            url
+                        }
+                    }
+                    try {
+                        const url = `${process.env.NEXT_PUBLIC_URL}/api/fetch-metadata`;
+                        const token = localStorage.getItem("UserToken")
+                        const requestOptions = {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
+                            body: JSON.stringify(body),
+                        }
+                        const responseJson = await fetch(url, requestOptions);
+                        console.log({ responseJson });
+                        const response = await responseJson.json();
+                        console.log(response)
+                        if (response?.id) {
+                            toast.success("News Added SuccessFully")
+                        }
+                        else {
+                            toast.warning("Something went wrong")
+                        }
 
-            const body = {
-                data: {
-                    url
+                    } catch (error) {
+                        toast.error("Fail to Add News")
+                    }
+                }
+                else if (newtype === WITHOUTURL) {
+                    if (!(newstitle && newsdescription && newscatogory && newsimage && newsauthor && newssource)) {
+                        toast.warning("All fields are mandatory")
+                        return
+                    }
+
+                    const body = {
+                        "data": {
+                            "title": newstitle,
+                            "description": newsdescription,
+                            "news_category": newscatogory,
+                            "village": checkedItems,
+                            "author": newsauthor,
+                            "source": newssource,
+                            "member": 86,
+                            "newsImage": newsimage,
+                        }
+                    }
+                    try {
+                        const url = `${process.env.NEXT_PUBLIC_URL}/api/news`;
+                        const token = localStorage.getItem("UserToken")
+                        const requestOptions = {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
+                            body: JSON.stringify(body),
+                        }
+                        const responseJson = await fetch(url, requestOptions);
+                        console.log({ responseJson });
+                        const response = await responseJson.json();
+                        console.log(response)
+                        if (response?.data?.id) {
+                            toast.success("News Added SuccessFully")
+                        }
+                        else {
+                            toast.warning("Something went wrong")
+                        }
+
+                    } catch (error) {
+                        toast.error("Fail to Add News")
+                    }
                 }
             }
-            try {
-                const url = `${process.env.NEXT_PUBLIC_URL}/api/fetch-metadata`;
-                const token = localStorage.getItem("UserToken")
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
-                    body: JSON.stringify(body),
+            else if (Dropdown == NOTICE) {
+                if (!(noticeheading && noticetype && noticedescription && noticeimage)) {
+                    toast.warning("All fields are mandatory")
+                    return
                 }
-                const responseJson = await fetch(url, requestOptions);
-                console.log({ responseJson });
-                const response = await responseJson.json();
-                console.log(response)
-                if (response?.id) {
-                    toast.success("News Added SuccessFully")
-                }
-                else {
-                    toast.warning("Something went wrong")
-                }
+                // uploadImage(noticeimage)
 
-            } catch (error) {
-                toast.error("Fail to Add News")
             }
-
         }
-        else if (Dropdown == NOTICE) {
-            if (!(heading && type && description)) {
-                toast.warning("All fields are mandatory")
-                return
-            }
-
-            const body = {
-                data: {
-                    heading,
-                    type,
-                    description,
-                    "village": checkedItems,
-                    "image": "TODO: BE ADDED LATER"
-                }
-            }
-
-            try {
-                const url = `${process.env.NEXT_PUBLIC_URL}/api/announcements`;
-                const token = localStorage.getItem("UserToken")
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
-                    body: JSON.stringify(body),
-                }
-                // const responseJson = await fetch(url, requestOptions);
-                // console.log({ responseJson });
-                // const response = await responseJson.json();
-                // console.log(response)
-                // if (response?.id) {
-                //     toast.success("News Added SuccessFully")
-                // }
-                // else {
-                //     toast.warning("Something went wrong")
-                // }
-
-            } catch (error) {
-                toast.error("Faill to add Notice")
-            }
-
-        }
-    }
-
-    // TODO: UPLOAD IMAGE
-    const [selectedFile, setSelectedFile] = useState();
-    const [isFilePicked, setIsFilePicked] = useState(false);
-
-    const uploadFile = async () => {
-        const formData = new FormData();
-        formData.append("files", selectedFile);
-
-        try {
-            const token = localStorage.getItem("UserToken");
-            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/upload`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData,
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                toast.success("Upload successful");
-                console.log('File uploaded successfully:', data);
-            } else {
-                const errorText = await response.text(); // Get the error message from the response
-                toast.error("Something went wrong");
-                console.log('Error uploading file:', errorText);
-            }
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        }
-    };
-
-
-    const handleImage = (e) => {
-        setSelectedFile(e.target.files[0]);
-        setIsFilePicked(true);
-        uploadFile()
     }
 
     //  TODO: checking Auth and fetching data
@@ -276,7 +331,7 @@ const Village = () => {
 
 
 
-    return filterData ? (
+    return (filterData && allnewscatogory) ? (
         <div className='flex sm:flex-col lg:flex-row justify-center items-start'>
             <ToastContainer />
             {/*    Filters and Table Data */}
@@ -385,6 +440,7 @@ const Village = () => {
             {/*   Form  */}
             <div className="sm:w-full lg:w-1/4 flex flex-col justify-start items-start p-5">
                 <h1 className="w-full text-center font-semibold text-xl">ENTER DETAILS</h1>
+                {/* DropDown */}
                 <div className="w-full flex justify-evenly items-center mt-2">
                     <select
                         value={Dropdown}
@@ -407,31 +463,120 @@ const Village = () => {
                 </div>
                 <div className="w-full">
                     {Dropdown === NEWS ? (
-                        <div className="m-2 w-full">
-                            <h1 className="font-bold text-xl text-[#590DE1]">URL</h1>
-                            <input
-                                type="text"
-                                id="url"
-                                placeholder="enter your URL of news"
-                                value={url}
-                                autoComplete="off"
-                                onChange={(e) => {
-                                    setUrl(e.target.value);
-                                }}
-                                className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
-                            />
+                        <div className='mx-2 w-full'>
+                            <div className="my-1 w-full" id='urlDiv'>
+                                <h1 className="font-bold text-xl text-[#590DE1]">URL</h1>
+                                <input
+                                    type="text"
+                                    id="url"
+                                    placeholder="enter your URL of news"
+                                    value={url}
+                                    autoComplete="off"
+                                    onChange={(e) => {
+                                        setUrl(e.target.value);
+                                    }}
+                                    onFocus={(e) => hanldeFocus("url")}
+                                    className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                />
+                            </div>
+                            <div className='my-1 text-md text-center font-bold text-gray-600'>
+                                OR
+                            </div>
+                            <div>
+                                <form action="post" id='NewsForm'>
+                                    <div className="">
+                                        <h1 className="font-bold text-xl text-[#590DE1]">Title</h1>
+                                        <input
+                                            type="text"
+                                            id="title"
+                                            placeholder="Title"
+                                            value={newstitle}
+                                            onChange={(e) => { setNewsTitle(e.target.value) }}
+                                            onFocus={(e) => hanldeFocus("noturl")}
+                                            className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                        />
+                                    </div>
+                                    <div className="mt-2">
+                                        <h1 className="font-bold text-xl text-[#590DE1]">Description</h1>
+                                        <input
+                                            type="text"
+                                            id="description"
+                                            placeholder="Description"
+                                            value={newsdescription}
+                                            onChange={(e) => { setNewsDescription(e.target.value) }}
+                                            onFocus={(e) => hanldeFocus("noturl")}
+                                            className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                        />
+                                    </div>
+                                    <div className='mt-2'>
+                                        <h1 className="font-bold text-xl text-[#590DE1]">News Catogory</h1>
+                                        <select
+                                            value={newscatogory}
+                                            onChange={(e) => { setNewsCatogory(e.target.value); }}
+                                            className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                            onFocus={(e) => hanldeFocus("noturl")}
+                                        >
+                                            {
+                                                allnewscatogory.map((catogory) => (
+                                                    <option
+                                                        value={catogory?.id}
+                                                        className="w-full text-gray-700 block px-4 py-2 text-lg"
+                                                    >
+                                                        {catogory?.attributes?.name}
+                                                    </option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+                                    <div className="">
+                                        <h1 className="font-bold text-xl text-[#590DE1]">Author</h1>
+                                        <input
+                                            type="text"
+                                            id="author"
+                                            placeholder="Author"
+                                            value={newsauthor}
+                                            onChange={(e) => { setNewsAuthor(e.target.value) }}
+                                            onFocus={(e) => hanldeFocus("noturl")}
+                                            className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                        />
+                                    </div>
+                                    <div className="">
+                                        <h1 className="font-bold text-xl text-[#590DE1]">Source</h1>
+                                        <input
+                                            type="text"
+                                            id="source"
+                                            placeholder="Source"
+                                            value={newssource}
+                                            onChange={(e) => { setNewsSource(e.target.value) }}
+                                            onFocus={(e) => hanldeFocus("noturl")}
+                                            className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                        />
+                                    </div>
+                                    <div className="mt-2">
+                                        <h1 className="font-bold text-xl text-[#590DE1]">Image</h1>
+                                        <input
+                                            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none text-md p-2"
+                                            id="FileNewsInput"
+                                            name='InputImage'
+                                            onChange={handleNewsImageFile}
+                                            onFocus={(e) => hanldeFocus("noturl")}
+                                            type="file"
+                                        />
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     ) : (
                         <div className="m-2 w-full">
-                            <form method="post">
+                            <form method="post" id='NoticeForm'>
                                 <div className="mt-2">
                                     <h1 className="font-bold text-xl text-[#590DE1]">Heading</h1>
                                     <input
                                         type="text"
                                         id="heading"
                                         placeholder="Heading"
-                                        value={heading}
-                                        onChange={(e) => { setHeading(e.target.value) }}
+                                        value={noticeheading}
+                                        onChange={(e) => { setNoticeHeading(e.target.value) }}
                                         className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                     />
                                 </div>
@@ -441,8 +586,8 @@ const Village = () => {
                                         type="text"
                                         id="type"
                                         placeholder="Type"
-                                        value={type}
-                                        onChange={(e) => { setType(e.target.value) }}
+                                        value={noticetype}
+                                        onChange={(e) => { setNoticeType(e.target.value) }}
                                         className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                     />
                                 </div>
@@ -453,8 +598,8 @@ const Village = () => {
                                         id="desc"
                                         rows="4"
                                         placeholder="Description"
-                                        value={description}
-                                        onChange={(e) => { setDescription(e.target.value) }}
+                                        value={noticedescription}
+                                        onChange={(e) => { setNoticeDescription(e.target.value) }}
                                         className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                     />
                                 </div>
@@ -462,8 +607,9 @@ const Village = () => {
                                     <h1 className="font-bold text-xl text-[#590DE1]">Image</h1>
                                     <input
                                         className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none text-md p-2"
-                                        id={"file_input"}
-                                        onChange={(e) => handleImage(e)}
+                                        id="FileNoticeInput"
+                                        name='InputImage'
+                                        onChange={handleNoticeImageFile}
                                         type="file"
                                     />
                                 </div>
