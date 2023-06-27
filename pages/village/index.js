@@ -6,6 +6,7 @@ import { FaFilter } from "react-icons/fa"
 import { BsDatabaseFillExclamation } from "react-icons/bs"
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import { FormData } from 'formdata-node';
 
 
 //  TODO: DEFINING VARIABLES 
@@ -79,42 +80,30 @@ const Village = () => {
 
     const FilterOutData = () => {
         let temp = villageData.filter((element) => {
-            let CheckSubDistrict =
-                subdistrict !== ""
-                    ? element?.attributes?.sub_district?.data?.attributes?.name
-                        .toLowerCase()
-                        .includes(subdistrict.toLowerCase())
-                    : true;
-            let CheckCity =
-                city !== ""
-                    ? element?.attributes?.city?.data?.attributes?.name
-                        .toLowerCase()
-                        .includes(city.toLowerCase())
-                    : true;
-            let CheckState =
-                state !== ""
-                    ? element?.attributes?.state?.data?.attributes?.name
-                        .toLowerCase()
-                        .includes(state.toLowerCase())
-                    : true;
-            let CheckActivatedTrue =
-                activated === SUBSCRIBED
-                    ? element?.attributes?.activated === true
-                    : true;
-            let CheckActivatedFalse =
-                activated === UNSUBSCRIBED
-                    ? element?.attributes?.activated === false
-                    : true;
 
-            // return true;
+            if (subdistrict && !element?.attributes?.sub_district?.data?.attributes?.name
+                .toLowerCase()
+                .includes(subdistrict.toLowerCase())) {
+                return false;
+            }
+            if (city && !element?.attributes?.city?.data?.attributes?.name
+                .toLowerCase()
+                .includes(city.toLowerCase())) {
+                return false;
+            }
+            if (state && !element?.attributes?.state?.data?.attributes?.name
+                .toLowerCase()
+                .includes(state.toLowerCase())) {
+                return false;
+            }
+            if (activated === SUBSCRIBED && !(element?.attributes?.activated === true)) {
+                return false
+            }
+            if (activated === UNSUBSCRIBED && !(element?.attributes?.activated === false)) {
+                return false
+            }
 
-            return (
-                CheckSubDistrict &&
-                CheckCity &&
-                CheckState &&
-                CheckActivatedTrue &&
-                CheckActivatedFalse
-            );
+            return true
         });
 
         setFilterData(temp);
@@ -167,7 +156,6 @@ const Village = () => {
                     url
                 }
             }
-            // console.log(JSON.stringify(body))
             try {
                 const url = `${process.env.NEXT_PUBLIC_URL}/api/fetch-metadata`;
                 const token = localStorage.getItem("UserToken")
@@ -234,6 +222,43 @@ const Village = () => {
         }
     }
 
+    // TODO: UPLOAD IMAGE
+    const [selectedFile, setSelectedFile] = useState();
+    const [isFilePicked, setIsFilePicked] = useState(false);
+
+    const uploadFile = async () => {
+        const formData = new FormData();
+        formData.append("files", selectedFile);
+
+        try {
+            const token = localStorage.getItem("UserToken");
+            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/upload`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                toast.success("Upload successful");
+                console.log('File uploaded successfully:', data);
+            } else {
+                const errorText = await response.text(); // Get the error message from the response
+                toast.error("Something went wrong");
+                console.log('Error uploading file:', errorText);
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+        }
+    };
+
+
+    const handleImage = (e) => {
+        setSelectedFile(e.target.files[0]);
+        setIsFilePicked(true);
+        uploadFile()
+    }
+
     //  TODO: checking Auth and fetching data
     useEffect(() => {
         if (checkAuth()) {
@@ -248,6 +273,7 @@ const Village = () => {
     useEffect(() => {
         FilterOutData()
     }, [subdistrict, city, state, activated]);
+
 
 
     return filterData ? (
@@ -397,53 +423,56 @@ const Village = () => {
                         </div>
                     ) : (
                         <div className="m-2 w-full">
-                            <div className="mt-2">
-                                <h1 className="font-bold text-xl text-[#590DE1]">Heading</h1>
-                                <input
-                                    type="text"
-                                    id="heading"
-                                    placeholder="Heading"
-                                    value={heading}
-                                    onChange={(e) => { setHeading(e.target.value) }}
-                                    className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
-                                />
-                            </div>
-                            <div className="mt-2">
-                                <h1 className="font-bold text-xl text-[#590DE1]">Type</h1>
-                                <input
-                                    type="text"
-                                    id="type"
-                                    placeholder="Type"
-                                    value={type}
-                                    onChange={(e) => { setType(e.target.value) }}
-                                    className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
-                                />
-                            </div>
-                            <div className="mt-2">
-                                <h1 className="font-bold text-xl text-[#590DE1]">Description</h1>
-                                <input
-                                    type="textarea"
-                                    id="desc"
-                                    rows="4"
-                                    placeholder="Description"
-                                    value={description}
-                                    onChange={(e) => { setDescription(e.target.value) }}
-                                    className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
-                                />
-                            </div>
-                            <div className="mt-2">
-                                <h1 className="font-bold text-xl text-[#590DE1]">Image</h1>
-                                <input
-                                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none text-md p-2"
-                                    id="file_input"
-                                    type="file"
-                                />
-                            </div>
+                            <form method="post">
+                                <div className="mt-2">
+                                    <h1 className="font-bold text-xl text-[#590DE1]">Heading</h1>
+                                    <input
+                                        type="text"
+                                        id="heading"
+                                        placeholder="Heading"
+                                        value={heading}
+                                        onChange={(e) => { setHeading(e.target.value) }}
+                                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                    />
+                                </div>
+                                <div className="mt-2">
+                                    <h1 className="font-bold text-xl text-[#590DE1]">Type</h1>
+                                    <input
+                                        type="text"
+                                        id="type"
+                                        placeholder="Type"
+                                        value={type}
+                                        onChange={(e) => { setType(e.target.value) }}
+                                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                    />
+                                </div>
+                                <div className="mt-2">
+                                    <h1 className="font-bold text-xl text-[#590DE1]">Description</h1>
+                                    <input
+                                        type="textarea"
+                                        id="desc"
+                                        rows="4"
+                                        placeholder="Description"
+                                        value={description}
+                                        onChange={(e) => { setDescription(e.target.value) }}
+                                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
+                                    />
+                                </div>
+                                <div className="mt-2">
+                                    <h1 className="font-bold text-xl text-[#590DE1]">Image</h1>
+                                    <input
+                                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none text-md p-2"
+                                        id={"file_input"}
+                                        onChange={(e) => handleImage(e)}
+                                        type="file"
+                                    />
+                                </div>
+                            </form>
                         </div>
                     )}
                 </div>
             </div>
-        </div>
+        </div >
 
     ) : (
         //   Loader
