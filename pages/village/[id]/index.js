@@ -80,6 +80,10 @@ const VillageDetails = ({ query }) => {
                                 <span className='text-xs font-semibold text-gray-300'>State</span>
                             </div>
                         </div>
+                        {/* Carousel */}
+                        <div>
+                            <ImageSlider gallery={attributes?.gallery?.data} />
+                        </div>
                         {/* member */}
                         <div className='flex flex-col justify-start items-start mt-5'>
                             <div className='flex justify-center items-center mx-5'>
@@ -212,10 +216,7 @@ const VillageDetails = ({ query }) => {
                                 ) : ("")}
                             </div>
                         </div>
-                        {/* Carousel */}
-                        <div>
-                            <ImageSlider gallery={attributes?.gallery?.data} />
-                        </div>
+
                     </div>
                 ) : (
                     <Loader />

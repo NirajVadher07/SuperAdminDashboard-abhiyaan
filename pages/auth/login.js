@@ -37,6 +37,7 @@ const Login = () => {
         if(data.jwt){
             toast.success("Login Successfull")
             localStorage.setItem("UserToken", data.jwt)
+            localStorage.setItem("UserDetails", data?.user)
             router.push("/")
         }
         else{

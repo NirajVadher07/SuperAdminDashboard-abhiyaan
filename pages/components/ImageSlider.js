@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
+import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
 
 const ImageSlider = ({ gallery }) => {
@@ -36,25 +36,24 @@ const ImageSlider = ({ gallery }) => {
         <div>
             {
                 slides.length > 0 ? (
-                    <div className='h-[100vh] w-full m-auto py-16 px-4 relative group'>
+                    <div className='h-[80vh] w-full pb-16 relative group'>
                         <div
                             style={{ backgroundImage: `url(${slides[currentIndex]?.url})` }}
-                            className='w-full h-full rounded-2xl bg-center bg-cover duration-500'
-                        ></div>
-                        {/* Left Arrow */}
-                        <div className='w-fit hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] left-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer'>
-                            <BsChevronCompactLeft onClick={prevSlide} size={20} />
-                        </div>
-                        {/* Right Arrow */}
-                        <div className='w-fit hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] right-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer'>
-                            <BsChevronCompactRight onClick={nextSlide} size={20} />
+                            className='w-full h-full bg-center bg-cover duration-500 flex justify-between items-center'
+                        >
+                            <div className='m-2 p-2 opacity-50'>
+                                <BsFillArrowLeftCircleFill className="text-4xl bg-gray-200 rounded-full" onClick={prevSlide} />
+                            </div>
+                            <div className='m-2 p-2 opacity-50'>
+                                <BsFillArrowRightCircleFill className="text-4xl bg-gray-200 rounded-full" onClick={nextSlide} />
+                            </div>
                         </div>
                         <div className='flex top-4 justify-center py-2'>
                             {slides.map((slide, slideIndex) => (
                                 <div
                                     key={slideIndex}
                                     onClick={() => goToSlide(slideIndex)}
-                                    className={`text-4xl cursor-pointer ${slideIndex==currentIndex ? ("text-[#590DE1] mx-5 transition-all") : ("")}`}
+                                    className={`text-4xl cursor-pointer ${slideIndex == currentIndex ? ("text-[#590DE1] mx-5 transition-all") : ("")}`}
                                 >
                                     <RxDotFilled />
                                 </div>
