@@ -1,9 +1,15 @@
+import Head from 'next/head'
 import Image from 'next/image'
 import React from 'react'
 
 const index = () => {
   return (
     <div>
+      <Head>
+        <title>
+          Contact Us
+        </title>
+      </Head>
       <div className='min-h-[70vh] flex justify-center items-center m-2'>
         <div className='w-1/2 flex justify-center items-center'>
           <Image src={"/contact.svg"} width={500} height={500} alt='contact page image' />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import checkAuth from '@/pages/utils/checkAuth'
 import Link from 'next/link'
+import Head from 'next/head'
 
 
 export const getServerSideProps = async (context) => {
@@ -49,6 +50,11 @@ const news = ({ query }) => {
       {
         details ? (
           <section className="text-gray-600 body-font">
+            <Head>
+              <title>
+                News
+              </title>
+            </Head>
             <div className="container px-5 py-5 mx-auto flex flex-col">
               <div className="lg:w-4/6 mx-auto">
                 <div className="rounded-lg h-64 overflow-hidden">

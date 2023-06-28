@@ -9,6 +9,7 @@ import Notice from '@/pages/components/Notice'
 import Complaint from '@/pages/components/Complaint'
 import News from '@/pages/components/News'
 import MemberCard from '@/pages/components/MemberCard'
+import Head from 'next/head'
 
 export const getServerSideProps = async (context) => {
     const { query } = context;
@@ -61,6 +62,11 @@ const VillageDetails = ({ query }) => {
             {
                 attributes ? (
                     <div className='min-h-[100vh] mt-2'>
+                        <Head>
+                            <title>
+                                {attributes?.name}
+                            </title>
+                        </Head>
                         {/* village name and other information */}
                         <div className={`p-2 flex justify-evenly items-center flex-wrap ${attributes?.activated ? ("bg-green-500") : ("bg-red-500")} bg-green-500 text-white`}>
                             <div className='sm:w-1/2 lg:w-1/4 sm:my-2 lg:my-0 sm:text-xl lg:text-3xl font-bold flex flex-col justify-center items-center'>

@@ -4,6 +4,7 @@ import checkAuth from '@/pages/utils/checkAuth'
 import Notice from '@/pages/components/Notice'
 import Complaint from '@/pages/components/Complaint'
 import News from '@/pages/components/News'
+import Head from 'next/head'
 
 export const getServerSideProps = async (context) => {
   const { query } = context;
@@ -52,6 +53,11 @@ const MoreDetails = ({ query }) => {
 
   return (
     <div>
+      <Head>
+        <title>
+          {name === "news" ? "News" : (name ===  "notices" ? "Notice" : "Complaints" )}
+        </title>
+      </Head>
       {
         name != "news" ?
           (
