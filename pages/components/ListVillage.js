@@ -13,10 +13,10 @@ const ListVillage = ({ element, checkedItems, handleCheckboxChange }) => {
                     onChange={handleCheckboxChange}
                 />
             </td>
-            <td className="p-3 text-sm   whitespace-normal text-center">
+            <td className="p-3 text-sm whitespace-normal text-center">
                 {attributes.name ? attributes.name  : "---"}
             </td>
-            <td className="p-3 text-sm   whitespace-normal text-center">
+            <td className="p-3 text-sm whitespace-normal text-center">
                 {attributes?.sub_district?.data?.attributes?.name ? attributes?.sub_district?.data?.attributes?.name  : "---"}
             </td>
             <td className="p-3 text-sm whitespace-normal text-center">

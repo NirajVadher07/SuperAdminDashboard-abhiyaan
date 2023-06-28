@@ -43,8 +43,8 @@ const Village = () => {
     const [Dropdown, SetDropdown] = useState(NOTICE)
 
     //  TODO: NEWS URL state
-    const [newtype, setNewtype] = useState(WITHURL)
-    const [url, setUrl] = useState("")
+    const [newstype, setNewsType] = useState(WITHURL)
+    const [newsurl, setNewsUrl] = useState("")
     const [newstitle, setNewsTitle] = useState("")
     const [newsdescription, setNewsDescription] = useState("")
     const [newsauthor, setNewsAuthor] = useState("")
@@ -187,12 +187,12 @@ const Village = () => {
         if (condition == "url") {
             newsform?.classList.add("opacity-30")
             urlDiv?.classList.remove("opacity-30")
-            setNewtype(WITHURL)
+            setNewsType(WITHURL)
         }
         else if (condition == "noturl") {
             urlDiv?.classList.add("opacity-30")
             newsform?.classList.remove("opacity-30")
-            setNewtype(WITHOUTURL)
+            setNewsType(WITHOUTURL)
         }
     }
 
@@ -204,7 +204,7 @@ const Village = () => {
 
             let formdata = new FormData();
             formdata.append("files", image);
-            formdata.append("village", villageId);
+            formdata.append("village", [1, 2, 3, 4]);
 
             // console.log(image)
             // formdata.forEach((value, key) => {
@@ -241,7 +241,7 @@ const Village = () => {
         }
         else {
             if (Dropdown == NEWS) {
-                if (newtype === WITHURL) {
+                if (newstype === WITHURL) {
                     if (url == "") {
                         toast.warning("Empty URL")
                         return;
@@ -249,7 +249,7 @@ const Village = () => {
 
                     const body = {
                         data: {
-                            url
+                            newsurl
                         }
                     }
                     try {
@@ -275,7 +275,7 @@ const Village = () => {
                         toast.error("Fail to Add News")
                     }
                 }
-                else if (newtype === WITHOUTURL) {
+                else if (newstype === WITHOUTURL) {
                     if (!(newstitle && newsdescription && newscategory && newsimage && newsauthor && newssource)) {
                         toast.warning("All fields are mandatory")
                         return
@@ -289,8 +289,8 @@ const Village = () => {
                             "village": checkedItems,
                             "author": newsauthor,
                             "source": newssource,
-                            "member": 86,
-                            "newsImage": newsimage,
+                            "member": localStorage.getItem("MemberId"),
+                            // "newsImage": FIXME: ,
                         }
                     }
                     try {
@@ -329,7 +329,6 @@ const Village = () => {
                         if (imageId) {
                             let url = `${process.env.NEXT_PUBLIC_URL}/api/announcements`
                             let token = localStorage.getItem("UserToken")
-                            // let memberId = localStorage.getItem("UserDetails").id
                             const body = {
                                 "data": {
                                     "heading": noticeheading,
@@ -340,7 +339,7 @@ const Village = () => {
                                     ],
                                     "notice_category": noticecategory,
                                     "images": imageId,
-                                    // TODO: "member": ,
+                                    "member": localStorage.getItem("MemberId"),
                                     "status": "compose"
                                 }
                             }
@@ -353,6 +352,7 @@ const Village = () => {
                             const responseJson = await fetch(url, requestOptions)
                             const response = await responseJson.json()
                             console.log(response)
+
                         }
                         else {
                             toast.error(`Unable to upload Image in Village ID: ${villageId}`)
@@ -372,6 +372,33 @@ const Village = () => {
         }
     }
 
+    //TODO: Clear all state value 
+    const ClearAllStateValue = () => {
+        setSubdistrict("")
+        setCity("")
+        setState("")
+        setActivated("")
+        setIsSelectedAll(false)
+        setCheckedItems([])
+        if(Dropdown === NOTICE){
+            setNoticeHeading("")
+            setNoticeType("")
+            setNoticeDescription("")
+            setNoticeCategory(allnoticecategory[0]?.id)
+            setNoticeImage(null)            
+        }
+        else{
+            setNewsType(WITHURL)
+            setNewsUrl("")
+            setNewsTitle("")
+            setNewsDescription("")
+            setNewsAuthor("")
+            setNewsSource("")
+            setNewsCategory(allnewscategory[0]?.id)
+            setNewsImage(null)
+        }
+    }
+    
     //  TODO: checking Auth and fetching data
     useEffect(() => {
         if (checkAuth()) {
@@ -390,7 +417,7 @@ const Village = () => {
 
 
     return (filterData && allnewscategory && allnoticecategory) ? (
-        <div className='flex sm:flex-col lg:flex-row justify-center items-start'>
+        <div className='flex flex-col lg:flex-row'>
             <ToastContainer />
             {/*    Filters and Table Data */}
             <div className="sm:w-full lg:w-3/4 min-h-[70vh] p-2 flex flex-col justify-start items-center">
@@ -440,31 +467,31 @@ const Village = () => {
                     </div>
                 </div>
                 {/*   display of data */}
-                <div className='relative flex justify-start items-center rounded-lg shadow-md'>
-                    <table className='w-full'>
-                        <thead className='bg-gray-50 border-b-2 border-gray-200'>
+                <div className="w-full overflow-x-auto p-2 flex justify-center items-center">
+                    <table className="whitespace-nowrap w-4/5">
+                        <thead>
                             <tr>
-                                <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
+                                <th className='  px-6 py-3 bg-gray-300 text-center text-xs font-semibold text-black  uppercase'>
                                     <input type="checkbox" name="checkbox" id="checkbox"
                                         checked={isSelectedAll}
                                         onChange={CheckIsSelectedAll} />
                                 </th>
-                                <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
+                                <th className='  px-6 py-3 bg-gray-300 text-center text-xs font-semibold text-black  uppercase'>
                                     village
                                 </th>
-                                <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
+                                <th className='  px-6 py-3 bg-gray-300 text-center text-xs font-semibold text-black  uppercase'>
                                     subdistrict
                                 </th>
-                                <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
+                                <th className='  px-6 py-3 bg-gray-300 text-center text-xs font-semibold text-black  uppercase'>
                                     city
                                 </th>
-                                <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
+                                <th className='  px-6 py-3 bg-gray-300 text-center text-xs font-semibold text-black  uppercase'>
                                     state
                                 </th>
-                                <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
+                                <th className='  px-6 py-3 bg-gray-300 text-center text-xs font-semibold text-black  uppercase'>
                                     status
                                 </th>
-                                <th className='tracking-wide px-6 py-3 bg-gray-50 text-center text-xs font-semibold text-black  uppercase'>
+                                <th className='  px-6 py-3 bg-gray-300 text-center text-xs font-semibold text-black  uppercase'>
                                     action
                                 </th>
                             </tr>
@@ -529,10 +556,10 @@ const Village = () => {
                                     type="text"
                                     id="url"
                                     placeholder="enter your URL of news"
-                                    value={url}
+                                    value={newsurl}
                                     autoComplete="off"
                                     onChange={(e) => {
-                                        setUrl(e.target.value);
+                                        setNewsUrl(e.target.value);
                                     }}
                                     onFocus={(e) => hanldeFocus("url")}
                                     className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
@@ -561,6 +588,7 @@ const Village = () => {
                                             type="text"
                                             id="description"
                                             placeholder="Description"
+                                            autoComplete='off'
                                             value={newsdescription}
                                             onChange={(e) => { setNewsDescription(e.target.value) }}
                                             onFocus={(e) => hanldeFocus("noturl")}

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import {useRouter} from 'next/router'
+import { useRouter } from 'next/router'
 
 const Login = () => {
     const [email, setEmail] = useState("")
@@ -16,8 +16,8 @@ const Login = () => {
         if (email == "" || password == "") {
             toast.error("Email and Passoword cannot be empty")
             return
-        }        
-        const url = `${process.env.NEXT_PUBLIC_URL}/api/auth/local`        
+        }
+        const url = `${process.env.NEXT_PUBLIC_URL}/api/auth/local`
         const body = {
             "identifier": email,
             "password": password
@@ -34,13 +34,23 @@ const Login = () => {
         const res = await fetch(url, requestOptions);
         const data = await res.json();
 
-        if(data.jwt){
+        if (data.jwt) {
             toast.success("Login Successfull")
             localStorage.setItem("UserToken", data.jwt)
-            localStorage.setItem("UserDetails", data?.user)
+            let url = `${process.env.NEXT_PUBLIC_URL}/api/members?filters[mobile]=${data?.user?.mobile}`            
+            let requestOptions = {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${data.jwt}` }
+            }
+            const responseJson = await fetch(url, requestOptions);
+            const response = await responseJson.json();
+            console.log(response)
+            const memberId = response?.data[0]?.id
+            console.log(memberId)
+            localStorage.setItem("MemberId", memberId)
             router.push("/")
         }
-        else{
+        else {
             toast.error("Invalid Credentials")
         }
 
@@ -65,11 +75,11 @@ const Login = () => {
                         <div className='mt-5'>
                             <div>
                                 <h1 className='text-lg font-bold py-2'>Email</h1>
-                                <input type="text" name='email' id='email' value={email} onChange={(e) => { setEmail(e.target.value) }} placeholder='name@company.com' className='text-lg p-2 w-full border-2 rounded-lg' />
+                                <input type="text" name='email' id='email' autoComplete='off' value={email} onChange={(e) => { setEmail(e.target.value) }} placeholder='name@company.com' className='text-lg p-2 w-full border-2 rounded-lg' />
                             </div>
                             <div>
                                 <h1 className='text-lg font-bold py-2'>Passsword</h1>
-                                <input type="password" name="password" id="password" value={password} onChange={(e) => { setPassword(e.target.value) }} placeholder='**********' className='text-lg p-2 w-full border-2 rounded-lg' />
+                                <input type="password" name="password" id="password" autoComplete='off' value={password} onChange={(e) => { setPassword(e.target.value) }} placeholder='**********' className='text-lg p-2 w-full border-2 rounded-lg' />
                             </div>
                         </div>
                         <div className='py-5 flex justify-center items-center'>

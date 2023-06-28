@@ -1,7 +1,7 @@
 import React from 'react'
-import Link from 'next/link'
+// import Link from 'next/link'
 import { useRouter } from 'next/router'
-import handler from '../api/hello'
+// import handler from '../api/hello'
 
 const News = ({ index, newsId, villageId , image, title, description, source, url }) => {
   const router = useRouter()
