@@ -37,9 +37,9 @@ const AddVillage = () => {
             <ToastContainer />
             <Head>
                 <title>
-                    Add Village            
-                    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />        
+                    Add Village
                 </title>
+                <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
             </Head>
             <div className='flex flex-col lg:flex-row justify-start lg:justify-center items-center min-h-[70vh] p-2 my-2 lg:m-0'>
                 <div className='w-full lg:w-1/2 flex justify-center items-center'>

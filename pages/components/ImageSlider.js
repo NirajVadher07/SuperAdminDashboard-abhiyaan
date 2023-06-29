@@ -3,6 +3,7 @@ import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from 'react-ico
 import { RxDotFilled } from 'react-icons/rx';
 
 const ImageSlider = ({ gallery }) => {
+
     const slides = []
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,14 +24,17 @@ const ImageSlider = ({ gallery }) => {
         setCurrentIndex(slideIndex);
     };
 
+
     if (gallery) {
-        for (let index = 0; index < gallery.length; index++) {
-            const element = gallery[index]?.attributes?.formats?.small?.url;
-            const obj = { "url": `${process.env.NEXT_PUBLIC_URL}${element}` }
-            slides.push(obj)
-        }
+        gallery.map((Photo) => {
+            const element = Photo?.image?.data?.attributes?.url;
+            if (element) {
+                const obj = { "url": `${process.env.NEXT_PUBLIC_URL}${element}` }
+                slides.push(obj)
+            }
+        })
     }
-    // console.log("slides --> ", slides)
+
 
     return (
         <div>
@@ -39,7 +43,7 @@ const ImageSlider = ({ gallery }) => {
                     <div className='h-[80vh] w-full pb-16 relative group'>
                         <div
                             style={{ backgroundImage: `url(${slides[currentIndex]?.url})` }}
-                            className='w-full h-full bg-center bg-cover duration-500 flex justify-between items-center'
+                            className='w-full h-full bg-center bg-fit bg-no-repeat duration-500 flex justify-between items-center'
                         >
                             <div className='m-2 p-2 opacity-50'>
                                 <BsFillArrowLeftCircleFill className="text-4xl bg-gray-200 rounded-full" onClick={prevSlide} />

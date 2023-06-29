@@ -20,6 +20,9 @@ const VillageDetails = ({ query }) => {
     const router = useRouter()
     const [id, setId] = useState(null)
     const [attributes, setAttributes] = useState({})
+    const [ImageCollection, setImageCollection] = useState([])
+    const [MemberCollection, setMemberCollection] = useState([])
+
 
     const fetchData = async () => {
         try {
@@ -34,6 +37,21 @@ const VillageDetails = ({ query }) => {
             const response = await jsonResponse.json();
             setId(response?.data?.id)
             setAttributes(response?.data?.attributes)
+
+
+            const ImageURL = `${process.env.URL}/api/village-galleries?populate[album][populate]=%2A&populate[album][pagination][page]=0&populate[album][pagination][pageSize]=10&populate[album][sort][0]=sortOrder%3Aasc&filters[$or][0][village][id][$eq]=${Id}&filters[$or][1][village][id][$in]=1&filters[isCarousel]=true&pagination[page]=1&pagination[withCount]=true&sort[0]=updatedAt%3Adesc`
+
+            const ImageResponseJSON = await fetch(ImageURL, requestOptions)
+            const ImageResponse = await ImageResponseJSON.json()            
+            setImageCollection(ImageResponse?.data[0]?.attributes?.album)
+
+
+            const MemberURL = `${process.env.URL}/api/members?populate[firstname]=true&populate[lastname]=true&populate[mobile]=true&populate[photo]=true&filters[village][id][$eq]=${Id}&sort[0]=createdAt%3Aasc`
+
+            const MemeberResponseJSON = await fetch(MemberURL, requestOptions)
+            const MemberResponse = await MemeberResponseJSON.json()            
+            setMemberCollection(MemberResponse.data)
+
         } catch (error) {
             toast.error("Fetch Data Error");
             console.log("Fetch Data Error : ", error)
@@ -60,11 +78,11 @@ const VillageDetails = ({ query }) => {
         <div className='text-black'>
             <ToastContainer />
             {
-                attributes ? (
+                (attributes) ? (
                     <div className='min-h-[100vh] mt-2'>
                         <Head>
                             <title>
-                                {attributes?.name}                                
+                                {attributes?.name}
                             </title>
                             <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
                         </Head>
@@ -89,7 +107,15 @@ const VillageDetails = ({ query }) => {
                         </div>
                         {/* Carousel */}
                         <div>
-                            <ImageSlider gallery={attributes?.gallery?.data} />
+                            {
+                                ImageCollection ? (
+                                    <ImageSlider gallery={ImageCollection} />
+                                ) : (
+                                    <div className='animate-pulse h-48'>
+                                    </div>
+                                )
+                            }
+
                         </div>
                         {/* member */}
                         <div className='flex flex-col justify-start items-start mt-5'>
@@ -100,7 +126,7 @@ const VillageDetails = ({ query }) => {
                             </div>
                             <div className='p-2 flex flex-wrap justify-evenly items-center w-full'>
                                 {/* {attributes?.members?.data.length} */}
-                                {attributes?.members?.data && attributes?.members?.data.length != 0 && attributes?.members?.data?.map((member, index) => {
+                                {MemberCollection && MemberCollection != 0 && MemberCollection.map((member, index) => {
                                     return (
                                         <MemberCard
                                             index={index}
@@ -108,6 +134,7 @@ const VillageDetails = ({ query }) => {
                                             lastname={member?.attributes?.lastname}
                                             mobileNumber={member?.attributes?.mobile}
                                             occupation={member?.attributes?.occupation}
+                                            url={member?.attributes?.photo?.data?.attributes?.formats?.small?.url}
                                         />
                                     )
                                 })}
