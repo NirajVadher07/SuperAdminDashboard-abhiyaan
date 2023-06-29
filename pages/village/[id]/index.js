@@ -39,17 +39,17 @@ const VillageDetails = ({ query }) => {
             setAttributes(response?.data?.attributes)
 
 
-            const ImageURL = `${process.env.URL}/api/village-galleries?populate[album][populate]=%2A&populate[album][pagination][page]=0&populate[album][pagination][pageSize]=10&populate[album][sort][0]=sortOrder%3Aasc&filters[$or][0][village][id][$eq]=${Id}&filters[$or][1][village][id][$in]=1&filters[isCarousel]=true&pagination[page]=1&pagination[withCount]=true&sort[0]=updatedAt%3Adesc`
+            const ImageURL = `${process.env.URL}/api/village-galleries?populate[album][populate]=%2A&populate[album][pagination][page]=0&populate[album][pagination][pageSize]=10&populate[album][sort][0]=sortOrder%3Aasc&filters[$or][0][village][id][$eq]=${Id}&filters[$or][1][village][id][$in]=${Id}&filters[isCarousel]=true&pagination[page]=1&pagination[withCount]=true&sort[0]=updatedAt%3Adesc`
 
             const ImageResponseJSON = await fetch(ImageURL, requestOptions)
-            const ImageResponse = await ImageResponseJSON.json()            
+            const ImageResponse = await ImageResponseJSON.json()
             setImageCollection(ImageResponse?.data[0]?.attributes?.album)
 
 
             const MemberURL = `${process.env.URL}/api/members?populate[firstname]=true&populate[lastname]=true&populate[mobile]=true&populate[photo]=true&filters[village][id][$eq]=${Id}&sort[0]=createdAt%3Aasc`
 
             const MemeberResponseJSON = await fetch(MemberURL, requestOptions)
-            const MemberResponse = await MemeberResponseJSON.json()            
+            const MemberResponse = await MemeberResponseJSON.json()
             setMemberCollection(MemberResponse.data)
 
         } catch (error) {
@@ -111,8 +111,7 @@ const VillageDetails = ({ query }) => {
                                 ImageCollection ? (
                                     <ImageSlider gallery={ImageCollection} />
                                 ) : (
-                                    <div className='animate-pulse h-48'>
-                                    </div>
+                                    ""
                                 )
                             }
 
@@ -167,7 +166,7 @@ const VillageDetails = ({ query }) => {
                                 })}
                                 {attributes?.notices?.data.length != 0 && attributes?.notices?.data.length > 5 ? (
                                     <button onClick={() => { handleMoreDetails("notices") }} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                        More Details..
+                                        More Notices..
                                     </button>
                                 ) : ("")}
                                 {attributes?.notices?.data.length === 0 ? (
@@ -198,7 +197,7 @@ const VillageDetails = ({ query }) => {
                                 })}
                                 {attributes?.complaints?.data.length != 0 && attributes?.complaints?.data.length > 5 ? (
                                     <button onClick={() => { handleMoreDetails("complaints") }} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                        More Details..
+                                        More Complaints..
                                     </button>
                                 ) : ("")}
                                 {attributes?.complaints?.data.length === 0 ? (
@@ -237,7 +236,7 @@ const VillageDetails = ({ query }) => {
                                 {attributes?.news?.data.length != 0 && attributes?.news?.data.length > 3 ? (
                                     <button onClick={() => { handleMoreDetails("news") }}
                                         className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 mx-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                        More Details..
+                                        More News..
                                     </button>
 
                                 ) : ("")}
