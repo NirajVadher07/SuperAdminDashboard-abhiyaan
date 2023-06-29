@@ -57,6 +57,7 @@ const MoreDetails = ({ query }) => {
         <title>
           {name === "news" ? "News" : (name ===  "notices" ? "Notice" : "Complaints" )}
         </title>
+        <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
       </Head>
       {
         name != "news" ?

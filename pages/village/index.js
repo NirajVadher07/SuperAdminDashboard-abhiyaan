@@ -4,9 +4,11 @@ import { useRouter } from 'next/router'
 import ListVillage from '../components/ListVillage'
 import { FaFilter } from "react-icons/fa"
 import { BsDatabaseFillExclamation } from "react-icons/bs"
+import { LuPlusCircle } from "react-icons/lu";
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head'
+import Link from 'next/link'
 // import { FormData } from 'formdata-node';
 
 
@@ -420,10 +422,11 @@ const Village = () => {
         <>
             <Head>
                 <title>Village List</title>
+                <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
             </Head>
-            <div className='flex flex-col lg:flex-row'>
+            <div className='flex flex-col lg:flex-row min-h-fit'>
                 <ToastContainer />
-                {/*    Filters and Table Data */}
+                {/*    Add Village , Filters and Table Data */}
                 <div className="sm:w-full lg:w-3/4 min-h-[70vh] p-2 flex flex-col justify-start items-center">
                     {/*  Filters */}
                     <div className="w-full mb-5 px-5 flex flex-col sm:flex-wrap lg:flex-nowrap lg:flex-row justify-center items-center">
@@ -469,6 +472,13 @@ const Village = () => {
                                 <option value={UNSUBSCRIBED} className="w-full text-gray-700 block px-4 py-2 text-lg">Unsubscribed</option>
                             </select>
                         </div>
+                    </div>
+                    {/* Add Village */}
+                    <div className='text-black w-full p-2 flex justify-start lg:justify-end items-center'>
+                        <Link href={"/village/addvillage"} className="min-w-fit bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white text-sm py-2 px-5 border border-[#590DE1] hover:border-transparent rounded-lg flex justify-between items-center">
+                            Add Village
+                            <LuPlusCircle className='text-lg font-bold ml-2' />
+                        </Link>
                     </div>
                     {/*   display of data */}
                     <div className="w-full overflow-x-auto p-2 flex justify-center items-center">
@@ -569,8 +579,14 @@ const Village = () => {
                                         className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                     />
                                 </div>
-                                <div className='my-1 text-md text-center font-bold text-gray-600'>
-                                    OR
+                                <div className='my-1 text-md text-center font-bold text-gray-600 flex justify-center items-center'>
+                                    <div className='w-2/5 border-2 border-gray-600 h-0'>                                        
+                                    </div>
+                                    <div className='w-1/5'>
+                                        OR
+                                    </div>
+                                    <div className='w-2/5 border-2 border-gray-600 h-0'>                                        
+                                    </div>
                                 </div>
                                 <div>
                                     <form action="post" id='NewsForm'>

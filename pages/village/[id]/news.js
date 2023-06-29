@@ -54,6 +54,7 @@ const news = ({ query }) => {
               <title>
                 News
               </title>
+              <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
             </Head>
             <div className="container px-5 py-5 mx-auto flex flex-col">
               <div className="lg:w-4/6 mx-auto">

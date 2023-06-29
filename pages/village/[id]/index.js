@@ -64,8 +64,9 @@ const VillageDetails = ({ query }) => {
                     <div className='min-h-[100vh] mt-2'>
                         <Head>
                             <title>
-                                {attributes?.name}
+                                {attributes?.name}                                
                             </title>
+                            <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
                         </Head>
                         {/* village name and other information */}
                         <div className={`p-2 flex justify-evenly items-center flex-wrap ${attributes?.activated ? ("bg-green-500") : ("bg-red-500")} bg-green-500 text-white`}>

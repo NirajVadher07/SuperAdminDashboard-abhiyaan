@@ -9,6 +9,7 @@ const index = () => {
         <title>
           Contact Us
         </title>
+        <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
       </Head>
       <div className='min-h-[70vh] flex justify-center items-center m-2'>
         <div className='w-1/2 flex justify-center items-center'>

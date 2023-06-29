@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 
 const Login = () => {
     const [email, setEmail] = useState("")
@@ -37,7 +38,7 @@ const Login = () => {
         if (data.jwt) {
             toast.success("Login Successfull")
             localStorage.setItem("UserToken", data.jwt)
-            let url = `${process.env.NEXT_PUBLIC_URL}/api/members?filters[mobile]=${data?.user?.mobile}`            
+            let url = `${process.env.NEXT_PUBLIC_URL}/api/members?filters[mobile]=${data?.user?.mobile}`
             let requestOptions = {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${data.jwt}` }
@@ -60,6 +61,10 @@ const Login = () => {
 
     return (
         <div className='flex flex-col justify-center items-center min-h-screen'>
+            <Head>
+                <title>Login</title>
+                <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+            </Head>
             <ToastContainer />
             <div className="shadow-2xl rounded-lg w-full m-5 lg:w-1/3 p-5">
                 <div className='flex justify-center items-center my-2'>
