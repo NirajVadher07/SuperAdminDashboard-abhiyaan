@@ -1,7 +1,8 @@
 import React from 'react'
-// import Link from 'next/link'
+
 import { useRouter } from 'next/router'
-// import handler from '../api/hello'
+import Link from 'next/link'
+
 
 const News = ({ index, newsId, villageId , image, title, description, source, url }) => {
   const router = useRouter()
@@ -31,7 +32,13 @@ const News = ({ index, newsId, villageId , image, title, description, source, ur
       </div>
       <div className="px-6 pb-4 flex justify-evenly items-center flex-wrap">
         <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 flex justify-center items-center">{source ? source : "NA"}</span>
-        <button onClick={HandleURL} className=" cursor-pointer inline-block bg-[#590DE1] rounded-full px-3 py-1 text-sm font-semibold text-white my-2">Read More</button>
+        {
+          url ? (
+            <Link href={url} target='_blank' className=" cursor-pointer inline-block bg-[#590DE1] rounded-full px-3 py-1 text-sm font-semibold text-white my-2">Read More</Link>
+          ) : (
+            <Link href={`/news/${newsId}`}  className=" cursor-pointer inline-block bg-[#590DE1] rounded-full px-3 py-1 text-sm font-semibold text-white my-2">Read More</Link>
+          )
+        }
       </div>
     </div>
   )

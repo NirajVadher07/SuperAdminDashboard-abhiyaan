@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import checkAuth from '@/pages/utils/checkAuth'
 import Head from 'next/head'
 import ApiCall from '@/pages/api/ApiCall';
-
+import UploadImage from '@/pages/utils/UploadImage';
 
 const AddVillage = () => {
 
@@ -13,6 +13,7 @@ const AddVillage = () => {
     const CITY = "city"
     const SUBDISTRICT = "subdistrict"
     const VILLAGE = "village"
+    const IMAGE = "image"
 
     const [villageName, setVillageName] = useState("")
 
@@ -25,45 +26,11 @@ const AddVillage = () => {
     const [stateName, setStateName] = useState(undefined)
     const [AllState, setAllState] = useState([])
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
+    const [villageImages, setVillageImages] = useState()
 
-        if (!(villageName && cityName && stateName)) {
-            toast.warning("All field are mandatory")
-            return
-        }
-
-        try {
-            const body = {
-                "data": {
-                    "name": villageName,
-                    "city": parseInt(cityName),
-                    "sub_district": parseInt(subdistrictName),
-                    "state": parseInt(stateName)
-                }
-            }
-            const response = await ApiCall(
-                'POST',
-                `${process.env.URL}/api/villages?populate=*`,
-                {},
-                body,
-                "Unable to add village"
-            )
-            if (response?.data?.id) {
-                toast.success("Village Added SuccessFull")
-            }
-            else {
-                toast.error("Unable to add Village")
-            }
-
-        } catch (error) {
-            console.log(error)
-        }
-
-    }
 
     const fetchstates = async () => {
-        try {            
+        try {
             const response = await ApiCall(
                 'GET',
                 `${process.env.URL}/api/states`,
@@ -134,9 +101,86 @@ const AddVillage = () => {
             case VILLAGE:
                 setVillageName(e.target.value)
                 break;
+            case IMAGE:
+                let VillageImages = document.getElementById('VillageImage');
+                let Images = VillageImages.files;
+                setVillageImages(Images);
+                break;
             default:
                 break;
         }
+    }
+
+    const clearState = () => {
+        setVillageName(undefined)
+        setCityName(undefined)
+        setStateName(undefined)
+        setAllState(undefined)
+        document.getElementById("VillageImage").files = null
+    }
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        if (!(villageName && cityName && stateName)) {
+            toast.warning("All field are mandatory")
+            return
+        }
+        toast.info('Adding Village...', { autoClose: false });
+        try {
+            const body = {
+                "data": {
+                    "name": villageName,
+                    "city": parseInt(cityName),
+                    "sub_district": parseInt(subdistrictName),
+                    "state": parseInt(stateName)
+                }
+            }
+            const response = await ApiCall(
+                'POST',
+                `${process.env.URL}/api/villages?populate=*`,
+                {},
+                body,
+                "Unable to add village"
+            )
+            if (response?.data?.id) {                
+                toast.dismiss()
+                toast.info('Uploading image...', { autoClose: false });
+                const imageIds = await UploadImage(`/gallery/${villageName}`, villageImages , [response?.data?.id])
+                toast.dismiss()
+                toast.success('Image uploaded successfully!', { autoClose: 3000 });
+                                
+                const body = {
+                    data:{
+                        "village": response?.data?.id.toString(),
+                        "album": [],
+                        "isCarousel":true
+                    }
+                }
+
+                imageIds.map((Id)=>{
+                    body.data.album.push({"image":Id})
+                })
+
+                const albumResponse = await ApiCall(
+                    "POST",
+                    `${process.env.URL}/api/village-galleries`,
+                    {},
+                    body,
+                    "Unable to Add Images to Village Gallery"
+                )                
+                console.log(albumResponse)
+                toast.success("Village Added SuccessFull", { autoClose: 3000 })
+                clearState()
+            }
+            else {
+                toast.error("Unable to add Village")
+            }
+
+        } catch (error) {
+            toast.dismiss()
+            console.log(error)
+        }
+
     }
 
     //  TODO: checking Auth 
@@ -262,7 +306,7 @@ const AddVillage = () => {
                             {/* Image */}
                             <div className="flex justify-between items-center my-5">
                                 <label className="text-md font-semibold text-gray-900">Images</label>
-                                <input type="file" name="VillageImage" multiple accept="image/png, image/gif, image/jpeg" className="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-black-500 focus:border-black-500 block w-2/3 p-2.5 ml-5" />
+                                <input type="file" id="VillageImage" onChange={(e) => handleStates(IMAGE)} multiple accept="image/png, image/gif, image/jpeg" className="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-black-500 focus:border-black-500 block w-2/3 p-2.5 ml-5" />
                             </div>
                             {/* Submit Button */}
                             <div className="flex justify-end items-center my-5">

@@ -3,9 +3,12 @@ import checkAuth from '../utils/checkAuth'
 import { useRouter } from 'next/router'
 import ListVillage from '../components/ListVillage'
 import ApiCall from '../api/ApiCall'
+import UploadImage from '../utils/UploadImage'
+
 import { FaFilter } from "react-icons/fa"
 import { BsDatabaseFillExclamation } from "react-icons/bs"
 import { LuPlusCircle } from "react-icons/lu";
+import { CiSquareRemove } from "react-icons/ci"
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head'
@@ -143,6 +146,18 @@ const Village = () => {
         setFilterData(temp);
     }
 
+    const ClearFilter = () => {
+        if (!(subdistrict || city || state || activated)) {
+            toast.info("Already Clear")
+        }
+        else {
+            setSubdistrict("")
+            setCity("")
+            setState("")
+            setActivated("")
+        }
+    }
+
     const CheckIsSelectedAll = () => {
         if (isSelectedAll) {
             setCheckedItems([])
@@ -176,13 +191,12 @@ const Village = () => {
         switch (Name) {
             case NOTICE:
                 let NoticefileInput = document.getElementById('FileNoticeInput');
-                let Noticeimage = NoticefileInput.files[0];
-                setNoticeImage(Noticeimage)
-                // uploadImage(Noticeimage, 1)
+                let Noticeimage = NoticefileInput.files;
+                setNoticeImage(Noticeimage)                
                 break;
             case NEWS:
                 let NewsfileInput = document.getElementById('FileNewsInput');
-                let Newsimage = NewsfileInput.files[0];
+                let Newsimage = NewsfileInput.files;
                 setNewsImage(Newsimage)
                 break;
             default:
@@ -203,43 +217,6 @@ const Village = () => {
             urlDiv?.classList.add("opacity-30")
             newsform?.classList.remove("opacity-30")
             setNewsType(WITHOUTURL)
-        }
-    }
-
-    const uploadImage = async (image, villageId) => {
-        try {
-            const url = `${process.env.NEXT_PUBLIC_URL}/api/upload`
-            const token = localStorage.getItem("UserToken")
-            let isUploaded = -99999
-
-            let formdata = new FormData();
-            formdata.append("files", image);
-            formdata.append("village", villageId);
-
-            // console.log(image)
-            // formdata.forEach((value, key) => {
-            //     console.log("key %s: value %s", key, value);
-            // })
-
-            var requestOptions = {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formdata,
-
-            };
-            const responseJson = await fetch(url, requestOptions)
-            const response = await responseJson.json()
-            response.map((element) => {
-                if (element?.id) {
-                    isUploaded = element?.id
-                }
-            })
-
-            return isUploaded
-
-        } catch (error) {
-            console.log(error)
-            return false
         }
     }
 
@@ -324,12 +301,15 @@ const Village = () => {
                 }
             }
             else if (Dropdown == NOTICE) {
-                if (!(noticeheading && noticetype && noticedescription && noticeimage)) {
+                if (!(noticeheading && noticetype && noticedescription && noticeimage && noticecategory)) {
                     toast.warning("All fields are mandatory")
                     return
-                }
+                }                
                 try {
-                    //TODO: const imageId = await uploadImage(noticeimage, parseInt(villageId, 10))
+                    toast.info('Uploading image...', { autoClose: false });                    
+                    const imageIds = await UploadImage(NOTICE, noticeimage, checkedItems)                    
+                    toast.dismiss()
+                    toast.success('Image uploaded successfully!', { autoClose: 3000 });
                     const body = {
                         "data": {
                             "heading": noticeheading,
@@ -337,7 +317,7 @@ const Village = () => {
                             "description": noticedescription,
                             "village": checkedItems,
                             "notice_category": noticecategory,
-                            "images": imageId,
+                            "images": imageIds,
                             "member": localStorage.getItem("MemberId"),
                             "status": "compose"
                         }
@@ -350,9 +330,16 @@ const Village = () => {
                         body,
                         "Unable to Add Notice"
                     )
-                    console.log(response)
+                    if(response?.data?.id){
+                        toast.success("SuccessFully Added Notice")
+                        ClearAllStateValue()
+                    }
+                    else{
+                        toast.error("Unable to add")
+                    }
 
                 } catch (error) {
+                    toast.dismiss()
                     console.log(error)
                     toast.error("Unable to Public Notice")
                 }
@@ -387,7 +374,6 @@ const Village = () => {
         }
     }
 
-
     //  TODO: checking Auth and fetching data
     useEffect(() => {
         if (checkAuth()) {
@@ -403,7 +389,7 @@ const Village = () => {
         FilterOutData()
     }, [subdistrict, city, state, activated]);
 
-    
+
     return (filterData && allnewscategory && allnoticecategory) ? (
         <>
             <Head>
@@ -415,7 +401,7 @@ const Village = () => {
                 {/*    Add Village , Filters and Table Data */}
                 <div className="sm:w-full lg:w-3/4 min-h-[70vh] p-2 flex flex-col justify-start items-center">
                     {/*  Filters */}
-                    <div className="w-full mb-5 px-5 flex flex-col sm:flex-wrap lg:flex-nowrap lg:flex-row justify-center items-center">
+                    <div className="w-full mb-5 flex flex-col sm:flex-wrap lg:flex-nowrap lg:flex-row justify-center items-center">
                         <div className="flex justify-center items-center w-full lg:w-1/6">
                             <FaFilter className="text-2xl mx-2" />
                             <h1 className="text-lg font-semibold">Filter</h1>
@@ -428,7 +414,7 @@ const Village = () => {
                                 autoComplete="off"
                                 value={subdistrict}
                                 onChange={(e) => { handleFilter(e, "subdistrict") }}
-                                className="w-1/3 lg:w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2 mx-1"
+                                className="w-1/3 lg:w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 sm:mt-2 lg:mt-0 mx-1"
                             />
                             <input
                                 type="text"
@@ -437,7 +423,7 @@ const Village = () => {
                                 autoComplete="off"
                                 value={city}
                                 onChange={(e) => { handleFilter(e, "city") }}
-                                className="w-1/3 lg:w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2 mx-1"
+                                className="w-1/3 lg:w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 sm:mt-2 lg:mt-0 mx-1"
                             />
                             <input
                                 type="text"
@@ -446,17 +432,25 @@ const Village = () => {
                                 autoComplete="off"
                                 value={state}
                                 onChange={(e) => { handleFilter(e, "state") }}
-                                className="w-1/3 lg:w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2 mx-1"
+                                className="w-1/3 lg:w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 sm:mt-2 lg:mt-0 mx-1"
                             />
                             <select
                                 value={activated}
                                 onChange={(e) => { handleFilter(e, "activated") }}
-                                className="w-1/3 lg:w-1/4 py-3 p-2.5 mt-2 lg:mx-1 rounded-lg border-gray-300 border-2 bg-gray-50 t-md"
+                                className="w-1/3 lg:w-1/4 py-3 p-2.5 sm:mt-2 lg:mt-0 lg:mx-1 rounded-lg border-gray-300 border-2 bg-gray-50 t-md"
                             >
                                 <option value="" className="w-full text-gray-700 block px-4 py-2 text-lg">None</option>
                                 <option value={SUBSCRIBED} className="w-full text-gray-700 block px-4 py-2 text-lg">Subscribed</option>
                                 <option value={UNSUBSCRIBED} className="w-full text-gray-700 block px-4 py-2 text-lg">Unsubscribed</option>
                             </select>
+                        </div>
+                        <div className='w-full lg:w-fit flex justify-end items-center p-2'>
+                            <div className='flex flex-col justify-center items-center cursor-pointer hover:text-red-700' onClick={ClearFilter}>
+                                <CiSquareRemove className='text-3xl' />
+                                <h1 className="text-xs text-center">
+                                    Clear
+                                </h1>
+                            </div>
                         </div>
                     </div>
                     {/* Add Village */}
@@ -654,6 +648,8 @@ const Village = () => {
                                                 onChange={(e) => handleImage(NEWS)}
                                                 onFocus={(e) => hanldeFocus("noturl")}
                                                 type="file"
+                                                multiple
+                                                accept="image/png, image/gif, image/jpeg"
                                             />
                                         </div>
                                     </form>
@@ -725,6 +721,8 @@ const Village = () => {
                                             name='InputImage'
                                             onChange={(e) => handleImage(NOTICE)}
                                             type="file"
+                                            multiple
+                                            accept="image/png, image/gif, image/jpeg"
                                         />
                                     </div>
                                 </form>

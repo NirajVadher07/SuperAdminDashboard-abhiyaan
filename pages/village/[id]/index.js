@@ -11,6 +11,7 @@ import News from '@/pages/components/News'
 import MemberCard from '@/pages/components/MemberCard'
 import Head from 'next/head'
 import ApiCall from '@/pages/api/ApiCall'
+import Link from 'next/link'
 
 
 export const getServerSideProps = async (context) => {
@@ -48,6 +49,8 @@ const VillageDetails = ({ query }) => {
                 null,
                 "Unable to Fetch Image Gallery"
             )
+
+            console.log({ ImageResponse })
             setImageCollection(ImageResponse?.data[0]?.attributes?.album)
 
             // Member Details
@@ -57,7 +60,7 @@ const VillageDetails = ({ query }) => {
                 {},
                 null,
                 "Unable to Fetch Member Details"
-            )        
+            )
             setMemberCollection(MemberResponse.data)
 
         } catch (error) {
@@ -65,14 +68,7 @@ const VillageDetails = ({ query }) => {
             console.log("Fetch Data Error : ", error)
         }
     }
-
-    const handleMoreDetails = (Name) => {
-        router.push({
-            pathname: `/village/${id}/moredetails`,
-            query: { Id: id, Name: Name },
-        }, `/village/${id}/moredetails`)
-    }
-
+    
     useEffect(() => {
         if (!checkAuth()) {
             router.push("/auth/login")
@@ -173,9 +169,11 @@ const VillageDetails = ({ query }) => {
                                     )
                                 })}
                                 {attributes?.notices?.data.length != 0 && attributes?.notices?.data.length > 5 ? (
-                                    <button onClick={() => { handleMoreDetails("notices") }} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                        More Notices..
-                                    </button>
+                                    <div className='my-5 mx-2'>
+                                        <Link href={`/village/${id}/notice`} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
+                                            More Notices..
+                                        </Link>
+                                    </div>
                                 ) : ("")}
                                 {attributes?.notices?.data.length === 0 ? (
                                     <div className='text-center italic font-bold text-xl w-full text-gray-600'>
@@ -204,9 +202,11 @@ const VillageDetails = ({ query }) => {
                                     )
                                 })}
                                 {attributes?.complaints?.data.length != 0 && attributes?.complaints?.data.length > 5 ? (
-                                    <button onClick={() => { handleMoreDetails("complaints") }} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                        More Complaints..
-                                    </button>
+                                    <div className='my-5 mx-2'>
+                                        <Link href={`/village/${id}/complaint`} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
+                                            More Complaints..
+                                        </Link>
+                                    </div>
                                 ) : ("")}
                                 {attributes?.complaints?.data.length === 0 ? (
                                     <div className='text-center italic font-bold text-xl w-full text-gray-600'>
@@ -242,10 +242,11 @@ const VillageDetails = ({ query }) => {
                             </div>
                             <div>
                                 {attributes?.news?.data.length != 0 && attributes?.news?.data.length > 3 ? (
-                                    <button onClick={() => { handleMoreDetails("news") }}
-                                        className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 mx-5 border border-[#590DE1] hover:border-transparent rounded-lg">
-                                        More News..
-                                    </button>
+                                    <div className='my-5 mx-2'>
+                                        <Link href={`/village/${id}/news`} className="bg-transparent hover:bg-[#590DE1] text-[#590DE1] font-semibold hover:text-white py-2 px-10 my-5 border border-[#590DE1] hover:border-transparent rounded-lg">
+                                            More News..
+                                        </Link>
+                                    </div>
 
                                 ) : ("")}
                                 {attributes?.news?.data.length === 0 ? (
