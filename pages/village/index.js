@@ -580,12 +580,12 @@ const Village = () => {
                                     />
                                 </div>
                                 <div className='my-1 text-md text-center font-bold text-gray-600 flex justify-center items-center'>
-                                    <div className='w-2/5 border-2 border-gray-600 h-0'>                                        
+                                    <div className='w-2/5 border-2 border-gray-600 h-0'>
                                     </div>
                                     <div className='w-1/5'>
                                         OR
                                     </div>
-                                    <div className='w-2/5 border-2 border-gray-600 h-0'>                                        
+                                    <div className='w-2/5 border-2 border-gray-600 h-0'>
                                     </div>
                                 </div>
                                 <div>

@@ -169,7 +169,7 @@ const AddVillage = () => {
 
 
     return (
-        <div>
+        <div className='flex flex-col justify-center items-center'>
             <ToastContainer />
             <Head>
                 <title>
@@ -177,14 +177,14 @@ const AddVillage = () => {
                 </title>
                 <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
             </Head>
-            <div className='flex flex-col lg:flex-row justify-start lg:justify-center items-center min-h-[70vh] p-2 my-2 lg:m-0'>
+            <div className='w-full text-center text-4xl text-[#590DE1] font-bold mt-5 lg:mt-0'>
+                Add Village
+            </div>
+            <div className='w-full flex flex-col lg:flex-row justify-start lg:justify-center items-center min-h-[70vh] p-2 my-2 lg:m-0'>
                 <div className='w-full lg:w-1/2 flex justify-center items-center'>
                     <Image className="object-cover object-center border-b-2 border-black" alt="hero" width={500} height={500} src="/addvillage.svg" />
                 </div>
                 <div className='w-full lg:w-1/2 flex flex-col justify-start items-center'>
-                    <div className='text-4xl text-[#590DE1] font-bold mt-5 lg:mt-0'>
-                        Add Village
-                    </div>
                     {/* Form */}
                     <div className='w-full px-2 py-5'>
                         <form action="" method="post">
@@ -271,7 +271,7 @@ const AddVillage = () => {
                             {/* Image */}
                             <div className="flex justify-between items-center my-5">
                                 <label className="text-md font-semibold text-gray-900">Images</label>
-                                <input type="file" name="VillageImage" multiple accept="image/png, image/gif, image/jpeg" className="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-black-500 focus:border-black-500 block w-2/3 p-2.5 ml-5"/>
+                                <input type="file" name="VillageImage" multiple accept="image/png, image/gif, image/jpeg" className="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-black-500 focus:border-black-500 block w-2/3 p-2.5 ml-5" />
                             </div>
                             {/* Submit Button */}
                             <div className="flex justify-end items-center my-5">
