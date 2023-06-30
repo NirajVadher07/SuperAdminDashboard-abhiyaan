@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import checkAuth from '../utils/checkAuth'
 import { useRouter } from 'next/router'
 import ListVillage from '../components/ListVillage'
+import ApiCall from '../api/ApiCall'
 import { FaFilter } from "react-icons/fa"
 import { BsDatabaseFillExclamation } from "react-icons/bs"
 import { LuPlusCircle } from "react-icons/lu";
@@ -9,8 +10,6 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head'
 import Link from 'next/link'
-// import { FormData } from 'formdata-node';
-
 
 //  TODO: DEFINING VARIABLES 
 const SUBDISTRICT = "subdistrict"
@@ -65,31 +64,39 @@ const Village = () => {
 
     const fetchData = async () => {
         try {
-            let url = `${process.env.NEXT_PUBLIC_URL}/api/villages?populate=*`
-            const token = localStorage.getItem("UserToken")
-            let requestOptions = {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
-            }
-            const responseJson = await fetch(url, requestOptions);
-            const response = await responseJson.json();
+            // Village data
+            const response = await ApiCall(
+                'GET',
+                `${process.env.NEXT_PUBLIC_URL}/api/villages?populate=*`,
+                {},
+                null,
+                "Unable to Fetch Village Data"
+            )
             setVillageData(response.data);
             setFilterData(response.data);
 
+            // News Category
+            const newsCatorgoryResponse = await ApiCall(
+                'GET',
+                `${process.env.NEXT_PUBLIC_URL}/api/news-categories`,
+                {},
+                null,
+                "Unable to Fetch News Category"
+            )
+            setAllNewsCategory(newsCatorgoryResponse.data)
 
-            url = `${process.env.NEXT_PUBLIC_URL}/api/news-categories`
-            const newCatorgoryResponseJson = await fetch(url, requestOptions)
-            const newCatorgoryResponse = await newCatorgoryResponseJson.json()
-            setAllNewsCategory(newCatorgoryResponse.data)
-
-            url = `${process.env.NEXT_PUBLIC_URL}/api/notice-categories`
-            const noticeCatorgoryResponseJson = await fetch(url, requestOptions)
-            const noticeCatorgoryResponse = await noticeCatorgoryResponseJson.json()
+            // Notice Category
+            const noticeCatorgoryResponse = await ApiCall(
+                'GET',
+                `${process.env.NEXT_PUBLIC_URL}/api/notice-categories`,
+                {},
+                null,
+                "Unable to Fetch Notice Category"
+            )
             setAllNoticeCategory(noticeCatorgoryResponse.data)
 
         } catch (error) {
-            toast.error("Fail to Fetech data")
-            console.log("Fetch Data Error : ", error)
+            console.log("Fetch Error : ", error)
         }
     }
 
@@ -207,7 +214,7 @@ const Village = () => {
 
             let formdata = new FormData();
             formdata.append("files", image);
-            formdata.append("village", [1, 2, 3, 4]);
+            formdata.append("village", villageId);
 
             // console.log(image)
             // formdata.forEach((value, key) => {
@@ -252,21 +259,20 @@ const Village = () => {
 
                     const body = {
                         data: {
-                            newsurl
+                            url: newsurl
+                            // TODO: ADD VILLAGE LIST                  
                         }
                     }
                     try {
-                        const url = `${process.env.NEXT_PUBLIC_URL}/api/fetch-metadata`;
-                        const token = localStorage.getItem("UserToken")
-                        const requestOptions = {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
-                            body: JSON.stringify(body),
-                        }
-                        const responseJson = await fetch(url, requestOptions);
-                        console.log({ responseJson });
-                        const response = await responseJson.json();
-                        console.log(response)
+                        // ADD NEWS WITHURL
+                        const response = await ApiCall(
+                            'POST',
+                            `${process.env.NEXT_PUBLIC_URL}/api/fetch-metadata`,
+                            {},
+                            body,
+                            "Fail to Add News"
+                        )
+
                         if (response?.id) {
                             toast.success("News Added SuccessFully")
                         }
@@ -275,7 +281,7 @@ const Village = () => {
                         }
 
                     } catch (error) {
-                        toast.error("Fail to Add News")
+                        console.log(error)
                     }
                 }
                 else if (newstype === WITHOUTURL) {
@@ -283,7 +289,6 @@ const Village = () => {
                         toast.warning("All fields are mandatory")
                         return
                     }
-
                     const body = {
                         data: {
                             "title": newstitle,
@@ -296,18 +301,16 @@ const Village = () => {
                             // "newsImage": FIXME: ,
                         }
                     }
+
                     try {
-                        const url = `${process.env.NEXT_PUBLIC_URL}/api/news`;
-                        const token = localStorage.getItem("UserToken")
-                        const requestOptions = {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
-                            body: JSON.stringify(body),
-                        }
-                        const responseJson = await fetch(url, requestOptions);
-                        console.log({ responseJson });
-                        const response = await responseJson.json();
-                        console.log(response)
+                        // ADD NEWS WITHOUTURL
+                        const response = await ApiCall(
+                            'POST',
+                            `${process.env.NEXT_PUBLIC_URL}/api/news`,
+                            {},
+                            body,
+                            "Fail to Add News"
+                        )
                         if (response?.data?.id) {
                             toast.success("News Added SuccessFully")
                         }
@@ -316,7 +319,7 @@ const Village = () => {
                         }
 
                     } catch (error) {
-                        toast.error("Fail to Add News")
+                        console.log(error)
                     }
                 }
             }
@@ -326,51 +329,33 @@ const Village = () => {
                     return
                 }
                 try {
-                    checkedItems.map(async (villageId) => {
-                        const imageId = await uploadImage(noticeimage, parseInt(villageId, 10))
-
-                        if (imageId) {
-                            let url = `${process.env.NEXT_PUBLIC_URL}/api/announcements`
-                            let token = localStorage.getItem("UserToken")
-                            const body = {
-                                "data": {
-                                    "heading": noticeheading,
-                                    "type": noticetype,
-                                    "description": noticedescription,
-                                    "village": [
-                                        villageId
-                                    ],
-                                    "notice_category": noticecategory,
-                                    "images": imageId,
-                                    "member": localStorage.getItem("MemberId"),
-                                    "status": "compose"
-                                }
-                            }
-                            var requestOptions = {
-                                method: 'POST',
-                                headers: { 'Authorization': `Bearer ${token}` },
-                                body: JSON.stringify(body),
-
-                            };
-                            const responseJson = await fetch(url, requestOptions)
-                            const response = await responseJson.json()
-                            console.log(response)
-
+                    //TODO: const imageId = await uploadImage(noticeimage, parseInt(villageId, 10))
+                    const body = {
+                        "data": {
+                            "heading": noticeheading,
+                            "type": noticetype,
+                            "description": noticedescription,
+                            "village": checkedItems,
+                            "notice_category": noticecategory,
+                            "images": imageId,
+                            "member": localStorage.getItem("MemberId"),
+                            "status": "compose"
                         }
-                        else {
-                            toast.error(`Unable to upload Image in Village ID: ${villageId}`)
-                            return;
-                        }
-                    })
+                    }
 
-                    toast.success("SuccessFully Added Notice to All villages")
+                    const response = await ApiCall(
+                        'POST',
+                        `${process.env.NEXT_PUBLIC_URL}/api/announcements`,
+                        {},
+                        body,
+                        "Unable to Add Notice"
+                    )
+                    console.log(response)
 
                 } catch (error) {
                     console.log(error)
                     toast.error("Unable to Public Notice")
                 }
-
-
             }
         }
     }
@@ -401,6 +386,8 @@ const Village = () => {
             setNewsImage(null)
         }
     }
+
+
     //  TODO: checking Auth and fetching data
     useEffect(() => {
         if (checkAuth()) {
@@ -416,8 +403,7 @@ const Village = () => {
         FilterOutData()
     }, [subdistrict, city, state, activated]);
 
-
-
+    
     return (filterData && allnewscategory && allnoticecategory) ? (
         <>
             <Head>
@@ -484,7 +470,7 @@ const Village = () => {
                     <div className="w-full overflow-x-auto p-2 flex justify-center items-center">
                         <table className="whitespace-nowrap w-4/5">
                             <thead>
-                                <tr>
+                                <tr key='HeaderRow'>
                                     <th className='  px-6 py-3 bg-gray-300 text-center text-xs font-semibold text-black  uppercase'>
                                         <input type="checkbox" name="checkbox" id="checkbox"
                                             checked={isSelectedAll}
@@ -519,7 +505,7 @@ const Village = () => {
                                             )
                                         })
                                     ) : (
-                                        <tr>
+                                        <tr key={"Loading"}>
                                             <td></td>
                                             <td></td>
                                             <td></td>

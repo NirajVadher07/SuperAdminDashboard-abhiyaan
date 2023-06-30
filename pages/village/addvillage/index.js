@@ -4,6 +4,8 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import checkAuth from '@/pages/utils/checkAuth'
 import Head from 'next/head'
+import ApiCall from '@/pages/api/ApiCall';
+
 
 const AddVillage = () => {
 
@@ -32,8 +34,6 @@ const AddVillage = () => {
         }
 
         try {
-            const url = `${process.env.URL}/api/villages?populate=*`;
-            const token = localStorage.getItem("UserToken")
             const body = {
                 "data": {
                     "name": villageName,
@@ -42,15 +42,13 @@ const AddVillage = () => {
                     "state": parseInt(stateName)
                 }
             }
-            console.log(JSON.stringify(body))
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' },
-                body: JSON.stringify(body)
-            }
-
-            const jsonResponse = await fetch(url, requestOptions);
-            const response = await jsonResponse.json();
+            const response = await ApiCall(
+                'POST',
+                `${process.env.URL}/api/villages?populate=*`,
+                {},
+                body,
+                "Unable to add village"
+            )
             if (response?.data?.id) {
                 toast.success("Village Added SuccessFull")
             }
@@ -60,63 +58,56 @@ const AddVillage = () => {
 
         } catch (error) {
             console.log(error)
-            console.log("Error in fetching Add Village")
-            toast.error("Unable to Add village")
         }
 
     }
 
     const fetchstates = async () => {
-        try {
-            const url = `${process.env.URL}/api/states`;
-            const token = localStorage.getItem("UserToken")
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' }
-            }
-            const jsonResponse = await fetch(url, requestOptions);
-            const response = await jsonResponse.json();
+        try {            
+            const response = await ApiCall(
+                'GET',
+                `${process.env.URL}/api/states`,
+                {},
+                null,
+                "Unable to Fetch State"
+            )
             setAllState(response?.data)
 
         } catch (error) {
-            console.log("Error in fetching States")
-            toast.error("Unable to get State data")
+            console.log(error)
+
         }
     }
 
     const fetchCity = async () => {
         try {
-            const url = `${process.env.URL}/api/cities?filters[$or][0][state][id][$eq]=${stateName}`;
-            const token = localStorage.getItem("UserToken")
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' }
-            }
-            const jsonResponse = await fetch(url, requestOptions);
-            const response = await jsonResponse.json();
+            const response = await ApiCall(
+                'GET',
+                `${process.env.URL}/api/cities?filters[$or][0][state][id][$eq]=${stateName}`,
+                {},
+                null,
+                "Unable to Fetch City"
+            )
             setAllCity(response?.data)
 
         } catch (error) {
-            console.log("Error in fetching City")
-            toast.error("Unable to get City data")
+            console.log(error)
         }
     }
 
     const fetchSubdistrict = async () => {
         try {
-            const url = `${process.env.URL}/api/sub-districts?filters[$or][0][city][id][$eq]=${cityName}`;
-            const token = localStorage.getItem("UserToken")
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-type': 'application/json' }
-            }
-            const jsonResponse = await fetch(url, requestOptions);
-            const response = await jsonResponse.json();
+            const response = await ApiCall(
+                'GET',
+                `${process.env.URL}/api/sub-districts?filters[$or][0][city][id][$eq]=${cityName}`,
+                {},
+                null,
+                "Unable to Fetch SubDistrict"
+            )
             setAllSubdistrict(response?.data)
 
         } catch (error) {
-            console.log("Error in fetching City")
-            toast.error("Unable to get City data")
+            console.log(error``)
         }
     }
 

@@ -10,6 +10,8 @@ import Complaint from '@/pages/components/Complaint'
 import News from '@/pages/components/News'
 import MemberCard from '@/pages/components/MemberCard'
 import Head from 'next/head'
+import ApiCall from '@/pages/api/ApiCall'
+
 
 export const getServerSideProps = async (context) => {
     const { query } = context;
@@ -26,30 +28,36 @@ const VillageDetails = ({ query }) => {
 
     const fetchData = async () => {
         try {
+            // Village Details
             const Id = query.id;
-            const url = `${process.env.URL}/api/villages/${Id}?populate=*`;
-            const token = localStorage.getItem("UserToken")
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
-            }
-            const jsonResponse = await fetch(url, requestOptions);
-            const response = await jsonResponse.json();
+            const response = await ApiCall(
+                'GET',
+                `${process.env.URL}/api/villages/${Id}?populate=*`,
+                {},
+                null,
+                "Unable to Fetch Village Details"
+            )
             setId(response?.data?.id)
             setAttributes(response?.data?.attributes)
 
-
-            const ImageURL = `${process.env.URL}/api/village-galleries?populate[album][populate]=%2A&populate[album][pagination][page]=0&populate[album][pagination][pageSize]=10&populate[album][sort][0]=sortOrder%3Aasc&filters[$or][0][village][id][$eq]=${Id}&filters[$or][1][village][id][$in]=${Id}&filters[isCarousel]=true&pagination[page]=1&pagination[withCount]=true&sort[0]=updatedAt%3Adesc`
-
-            const ImageResponseJSON = await fetch(ImageURL, requestOptions)
-            const ImageResponse = await ImageResponseJSON.json()
+            // Image Gallery
+            const ImageResponse = await ApiCall(
+                'GET',
+                `${process.env.URL}/api/village-galleries?populate[album][populate]=%2A&populate[album][pagination][page]=0&populate[album][pagination][pageSize]=10&populate[album][sort][0]=sortOrder%3Aasc&filters[$or][0][village][id][$eq]=${Id}&filters[$or][1][village][id][$in]=${Id}&filters[isCarousel]=true&pagination[page]=1&pagination[withCount]=true&sort[0]=updatedAt%3Adesc`,
+                {},
+                null,
+                "Unable to Fetch Image Gallery"
+            )
             setImageCollection(ImageResponse?.data[0]?.attributes?.album)
 
-
-            const MemberURL = `${process.env.URL}/api/members?populate[firstname]=true&populate[lastname]=true&populate[mobile]=true&populate[photo]=true&filters[village][id][$eq]=${Id}&sort[0]=createdAt%3Aasc`
-
-            const MemeberResponseJSON = await fetch(MemberURL, requestOptions)
-            const MemberResponse = await MemeberResponseJSON.json()
+            // Member Details
+            const MemberResponse = await ApiCall(
+                'GET',
+                `${process.env.URL}/api/members?populate[firstname]=true&populate[lastname]=true&populate[mobile]=true&populate[photo]=true&filters[village][id][$eq]=${Id}&sort[0]=createdAt%3Aasc`,
+                {},
+                null,
+                "Unable to Fetch Member Details"
+            )        
             setMemberCollection(MemberResponse.data)
 
         } catch (error) {

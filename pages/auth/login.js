@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 
+
 const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -35,8 +36,7 @@ const Login = () => {
         const res = await fetch(url, requestOptions);
         const data = await res.json();
 
-        if (data.jwt) {
-            toast.success("Login Successfull")
+        if (data.jwt) {            
             localStorage.setItem("UserToken", data.jwt)
             let url = `${process.env.NEXT_PUBLIC_URL}/api/members?filters[mobile]=${data?.user?.mobile}`
             let requestOptions = {
@@ -44,9 +44,8 @@ const Login = () => {
                 headers: { 'Authorization': `Bearer ${data.jwt}` }
             }
             const responseJson = await fetch(url, requestOptions);
-            const response = await responseJson.json();
-            console.log(response)
-            const memberId = response?.data[0]?.id
+            const response = await responseJson.json();            
+            const memberId = response?.data?.[0]?.id
             console.log(memberId)
             localStorage.setItem("MemberId", memberId)
             router.push("/")
