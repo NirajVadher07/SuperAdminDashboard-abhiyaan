@@ -145,7 +145,7 @@ const AddVillage = () => {
             if (response?.data?.id) {                
                 toast.dismiss()
                 toast.info('Uploading image...', { autoClose: false });
-                const imageIds = await UploadImage(`/gallery/${villageName}`, villageImages , [response?.data?.id])
+                const imageIds = await UploadImage("gallery/carousel", villageImages , [response?.data?.id])
                 toast.dismiss()
                 toast.success('Image uploaded successfully!', { autoClose: 3000 });
                                 

@@ -192,7 +192,7 @@ const Village = () => {
             case NOTICE:
                 let NoticefileInput = document.getElementById('FileNoticeInput');
                 let Noticeimage = NoticefileInput.files;
-                setNoticeImage(Noticeimage)                
+                setNoticeImage(Noticeimage)
                 break;
             case NEWS:
                 let NewsfileInput = document.getElementById('FileNewsInput');
@@ -304,10 +304,10 @@ const Village = () => {
                 if (!(noticeheading && noticetype && noticedescription && noticeimage && noticecategory)) {
                     toast.warning("All fields are mandatory")
                     return
-                }                
+                }
                 try {
-                    toast.info('Uploading image...', { autoClose: false });                    
-                    const imageIds = await UploadImage(NOTICE, noticeimage, checkedItems)                    
+                    toast.info('Uploading image...', { autoClose: false });
+                    const imageIds = await UploadImage(NOTICE, noticeimage, checkedItems)
                     toast.dismiss()
                     toast.success('Image uploaded successfully!', { autoClose: 3000 });
                     const body = {
@@ -330,11 +330,11 @@ const Village = () => {
                         body,
                         "Unable to Add Notice"
                     )
-                    if(response?.data?.id){
+                    if (response?.data?.id) {
                         toast.success("SuccessFully Added Notice")
                         ClearAllStateValue()
                     }
-                    else{
+                    else {
                         toast.error("Unable to add")
                     }
 
@@ -603,6 +603,7 @@ const Village = () => {
                                                 className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                                 onFocus={(e) => hanldeFocus("noturl")}
                                             >
+                                                <option value={null} className="w-full text-gray-400 block px-4 py-2 text-lg">No Selected</option>
                                                 {
                                                     allnewscategory.map((category) => (
                                                         <option
@@ -701,6 +702,7 @@ const Village = () => {
                                             className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-[#590DE1] focus:border-[#590DE1] block p-2.5 mt-2"
                                             onFocus={(e) => hanldeFocus("noturl")}
                                         >
+                                            <option value={null} className="w-full text-gray-400 block px-4 py-2 text-lg">No Selected</option>
                                             {
                                                 allnoticecategory.map((category) => (
                                                     <option

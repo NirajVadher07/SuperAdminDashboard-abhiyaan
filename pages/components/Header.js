@@ -9,16 +9,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { GiHamburgerMenu } from "react-icons/gi"
 
 const Header = () => {
-    const [isAuth, setIsAuth] = useState(false)
-
+    const [isAuth, setIsAuth] = useState(false)    
     const router = useRouter()
-    const isAutheticated = () => {
+    
+    useEffect(() => {
         if (checkAuth()) {
             setIsAuth(true)
         }
-    }
-    useEffect(() => {
-        isAutheticated()
     }, [])
 
     const handleLogout = () => {
@@ -70,7 +67,7 @@ const Header = () => {
                     <GiHamburgerMenu id='menu' className='text-3xl cursor-pointer' onClick={toggler} />
                 </div>
             </div>
-            <div id='NavbarMenu' className="w-full lg:3/4 hidden lg:flex lg:flex-row flex-col lg:ml-5 shadow-2xl lg:shadow-none py-2 px-2 lg:p-0 rounded-lg lg:rounded-none transition-shadow">
+            <div id='NavbarMenu' className={`w-full lg:3/4 hidden lg:flex lg:flex-row flex-col lg:ml-5 shadow-2xl lg:shadow-none py-2 px-2 lg:p-0 rounded-lg lg:rounded-none transition-shadow`}>
                 <div className='w-full lg:w-3/4 flex flex-col lg:flex-row justify-start items-start lg:items-center'>
                     <Link href={"/village"}>
                         <h1 className='text-xl font-bold cursor-pointer transition-all lg:hover:border-b-2  border-[#590DE1] px-3 py-2 mr-5'>
