@@ -14,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head'
 import Link from 'next/link'
 
-//  TODO: DEFINING VARIABLES 
+// DEFINING VARIABLES 
 const SUBDISTRICT = "subdistrict"
 const CITY = "city"
 const STATE = "state"
@@ -29,11 +29,12 @@ const WITHOUTURL = "withouturl"
 const Village = () => {
     const router = useRouter()
 
-    //  TODO: fetching intial data
+    // Fetching intial data
     const [villageData, setVillageData] = useState([])
     const [allnewscategory, setAllNewsCategory] = useState([])
     const [allnoticecategory, setAllNoticeCategory] = useState([])
-    //  TODO: Filters
+
+    //  State's used during Filter
     const [subdistrict, setSubdistrict] = useState("")
     const [city, setCity] = useState("")
     const [state, setState] = useState("")
@@ -41,13 +42,13 @@ const Village = () => {
     const [filterData, setFilterData] = useState([])
     const [isSelectedAll, setIsSelectedAll] = useState(false)
 
-    //  TODO: checkboxes
+    //  Array of ID's of all ticked village Eg. ["1","27", ...]
     const [checkedItems, setCheckedItems] = useState([]);
 
-    //  TODO: dropdown 
+    //  dropdown State
     const [Dropdown, SetDropdown] = useState(NOTICE)
 
-    //  TODO: NEWS URL state
+    // States used for News
     const [newstype, setNewsType] = useState(WITHURL)
     const [newsurl, setNewsUrl] = useState("")
     const [newstitle, setNewsTitle] = useState("")
@@ -57,7 +58,7 @@ const Village = () => {
     const [newscategory, setNewsCategory] = useState(allnewscategory[0]?.id);
     const [newsimage, setNewsImage] = useState()
 
-    //  TODO: NOTICE state    
+    // States used for Notice
     const [noticeheading, setNoticeHeading] = useState("")
     const [noticetype, setNoticeType] = useState("")
     const [noticedescription, setNoticeDescription] = useState("")
@@ -65,6 +66,7 @@ const Village = () => {
     const [noticeimage, setNoticeImage] = useState()
 
 
+    //initial Fetching of data includes : Village Data, News Category, & Notice Category
     const fetchData = async () => {
         try {
             // Village data
@@ -103,6 +105,7 @@ const Village = () => {
         }
     }
 
+    // Updates state of filter on change
     const handleFilter = (e, Name) => {
         if (Name === SUBDISTRICT) {
             setSubdistrict(e.target.value);
@@ -115,6 +118,7 @@ const Village = () => {
         }
     };
 
+    // Filter Logic
     const FilterOutData = () => {
         let temp = villageData.filter((element) => {
 
@@ -146,6 +150,7 @@ const Village = () => {
         setFilterData(temp);
     }
 
+    // reseting the filters 
     const ClearFilter = () => {
         if (!(subdistrict || city || state || activated)) {
             toast.info("Already Clear")
@@ -158,6 +163,7 @@ const Village = () => {
         }
     }
 
+    // logic for selecting all avaliable filterdata
     const CheckIsSelectedAll = () => {
         if (isSelectedAll) {
             setCheckedItems([])
@@ -178,6 +184,7 @@ const Village = () => {
         }
     }
 
+    // Update state of CheckedItems 
     const handleCheckboxChange = (e) => {
         const { value, checked } = e.target;
         if (checked) {
@@ -187,6 +194,7 @@ const Village = () => {
         }
     };
 
+    // Update states of News and Notice image
     const handleImage = (Name) => {
         switch (Name) {
             case NOTICE:
@@ -205,6 +213,7 @@ const Village = () => {
         }
     }
 
+    // Selection of News(post) method
     const hanldeFocus = (condition) => {
         const newsform = document.getElementById("NewsForm")
         const urlDiv = document.getElementById("urlDiv")
@@ -220,14 +229,14 @@ const Village = () => {
         }
     }
 
-    //  TODO: HandleNoticeNews 
+    // OnClick of Action Button
     const HandleNoticeNews = async () => {
         if (checkedItems.length == 0) {
             toast.warning("Please Select Any Villages")
             return;
         }
         else {
-            if (Dropdown == NEWS) {
+            if (Dropdown == NEWS) {                
                 if (newstype === WITHURL) {
                     if (url == "") {
                         toast.warning("Empty URL")
@@ -307,7 +316,7 @@ const Village = () => {
                 }
                 try {
                     toast.info('Uploading image...', { autoClose: false });
-                    const imageIds = await UploadImage(NOTICE, noticeimage, checkedItems)
+                    const imageIds = await UploadImage(NOTICE, noticeimage, checkedItems)                                    
                     toast.dismiss()
                     toast.success('Image uploaded successfully!', { autoClose: 3000 });
                     const body = {
@@ -347,7 +356,7 @@ const Village = () => {
         }
     }
 
-    //TODO: Clear all state value 
+    // Clear all state value 
     const ClearAllStateValue = () => {
         setSubdistrict("")
         setCity("")
@@ -374,7 +383,7 @@ const Village = () => {
         }
     }
 
-    //  TODO: checking Auth and fetching data
+    // checking Auth and fetching data
     useEffect(() => {
         if (checkAuth()) {
             fetchData()
@@ -384,7 +393,8 @@ const Village = () => {
         }
     }, [])
 
-    // TODO: filter Function
+    
+    // filter Function on change of values
     useEffect(() => {
         FilterOutData()
     }, [subdistrict, city, state, activated]);
@@ -392,10 +402,12 @@ const Village = () => {
 
     return (filterData && allnewscategory && allnoticecategory) ? (
         <>
+            {/* Head */}
             <Head>
                 <title>Village List</title>
                 <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
             </Head>
+            {/* Body */}
             <div className='flex flex-col lg:flex-row min-h-fit'>
                 <ToastContainer />
                 {/*    Add Village , Filters and Table Data */}
@@ -460,7 +472,7 @@ const Village = () => {
                             <LuPlusCircle className='text-lg font-bold ml-2' />
                         </Link>
                     </div>
-                    {/*   display of data */}
+                    {/* Table data */}
                     <div className="w-full overflow-x-auto p-2 flex justify-center items-center">
                         <table className="whitespace-nowrap w-4/5">
                             <thead>

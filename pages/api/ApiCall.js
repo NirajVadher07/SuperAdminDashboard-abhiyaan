@@ -1,5 +1,7 @@
 import React from 'react'
 import { toast } from 'react-toastify'
+// General API call Function
+
 
 async function ApiCall(method, url, headers = {}, body = null, errorMessage = 'Error') {
     

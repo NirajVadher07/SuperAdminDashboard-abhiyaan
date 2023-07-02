@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 
+// TODO: Save MemberID in localstorage with Encrytion.
 
 const Login = () => {
     const [email, setEmail] = useState("")

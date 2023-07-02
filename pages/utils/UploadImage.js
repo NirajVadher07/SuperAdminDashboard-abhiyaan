@@ -1,4 +1,5 @@
 import React from "react";
+// Separate Logic for Uploading Image in the Database
 
 const UploadImage = async (Path, images, villageArray) => {
     try {
@@ -14,6 +15,7 @@ const UploadImage = async (Path, images, villageArray) => {
         formdata.append("village", JSON.stringify(villageArray));
         formdata.append("path", `${Path}`);
 
+        // FormData Console Log
         // console.log(images)
         // formdata.forEach((value, key) => {
         //     console.log("key %s: value %s", key, value);

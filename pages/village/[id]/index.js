@@ -13,11 +13,12 @@ import Head from 'next/head'
 import ApiCall from '@/pages/api/ApiCall'
 import Link from 'next/link'
 
-
+//getting query paramters: [id]
 export const getServerSideProps = async (context) => {
     const { query } = context;
     return { props: { query } };
 }
+
 
 const VillageDetails = ({ query }) => {
     const router = useRouter()
@@ -84,6 +85,7 @@ const VillageDetails = ({ query }) => {
             {
                 (attributes) ? (
                     <div className='min-h-[100vh] mt-2'>
+                        {/* Head */}
                         <Head>
                             <title>
                                 {attributes?.name}

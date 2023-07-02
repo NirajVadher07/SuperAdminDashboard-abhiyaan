@@ -78,6 +78,7 @@ const AddVillage = () => {
         }
     }
 
+    // on change update states
     const handleStates = (Name, e) => {
         switch (Name) {
             case STATE:
@@ -111,6 +112,8 @@ const AddVillage = () => {
         }
     }
 
+
+    //clear states
     const clearState = () => {
         setVillageName(undefined)
         setCityName(undefined)
@@ -118,6 +121,8 @@ const AddVillage = () => {
         setAllState(undefined)
         document.getElementById("VillageImage").files = null
     }
+
+    // on click Add Village
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -183,7 +188,7 @@ const AddVillage = () => {
 
     }
 
-    //  TODO: checking Auth 
+    // checking Auth 
     useEffect(() => {
         if (!checkAuth()) {
             router.push("/auth/login")
@@ -206,15 +211,17 @@ const AddVillage = () => {
     return (
         <div className='flex flex-col justify-center items-center'>
             <ToastContainer />
+            {/* Head */}
             <Head>
                 <title>
                     Add Village
                 </title>
                 <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
             </Head>
+            {/* Body */}
             <div className='w-full text-center text-4xl text-[#590DE1] font-bold mt-5 lg:mt-0'>
                 Add Village
-            </div>
+            </div>            
             <div className='w-full flex flex-col lg:flex-row justify-start lg:justify-center items-center min-h-[70vh] p-2 my-2 lg:m-0'>
                 <div className='w-full lg:w-1/2 flex justify-center items-center'>
                     <Image className="object-cover object-center border-b-2 border-black" alt="hero" width={500} height={500} src="/addvillage.svg" />
