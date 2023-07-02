@@ -1,12 +1,9 @@
 ![Abhiyaan](/public/icon.png)
 
 # Super Admin Dashboard
-This is a [Next.js](https://nextjs.org/) project 
 
-## Getting Started
-
+## How to start 
 First, run the development server:
-
 ```bash
 npm run dev
 ```
@@ -44,3 +41,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 # API
 - ```ApiCall.js```
 
+
+***
+![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white)
