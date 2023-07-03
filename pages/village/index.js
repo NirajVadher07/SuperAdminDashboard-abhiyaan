@@ -26,9 +26,45 @@ const NEWS = "news"
 const WITHURL = 'withurl'
 const WITHOUTURL = "withouturl"
 
-const Village = () => {
-    const router = useRouter()
 
+// export const getServerSideProps = async (context) => {
+//     const response = await ApiCall(
+//         'GET',
+//         `${process.env.NEXT_PUBLIC_URL}/api/villages?populate=*`,
+//         {},
+//         null,
+//         "Unable to Fetch Village Data"
+//     )
+
+//     // News Category
+//     const newsCatorgoryResponse = await ApiCall(
+//         'GET',
+//         `${process.env.NEXT_PUBLIC_URL}/api/news-categories`,
+//         {},
+//         null,
+//         "Unable to Fetch News Category"
+//     )
+//     // Notice Category
+//     const noticeCatorgoryResponse = await ApiCall(
+//         'GET',
+//         `${process.env.NEXT_PUBLIC_URL}/api/notice-categories`,
+//         {},
+//         null,
+//         "Unable to Fetch Notice Category"
+//     )
+
+//     return {
+//         props: {
+//             villagedata: response.data,
+//             news_category: newsCatorgoryResponse.data,
+//             notice_category: noticeCatorgoryResponse.data
+//         }
+//     }
+// }
+
+const Village = () => {
+    // console.log({ villagedata, news_category, notice_category })
+    const router = useRouter()
     // Fetching intial data
     const [villageData, setVillageData] = useState([])
     const [allnewscategory, setAllNewsCategory] = useState([])
@@ -153,7 +189,7 @@ const Village = () => {
     // reseting the filters 
     const ClearFilter = () => {
         if (!(subdistrict || city || state || activated)) {
-            toast.info("Already Clear")
+            toast.info("Already Clear", { autoClose: 1000 })
         }
         else {
             setSubdistrict("")
@@ -236,7 +272,7 @@ const Village = () => {
             return;
         }
         else {
-            if (Dropdown == NEWS) {                
+            if (Dropdown == NEWS) {
                 if (newstype === WITHURL) {
                     if (url == "") {
                         toast.warning("Empty URL")
@@ -245,12 +281,11 @@ const Village = () => {
 
                     const body = {
                         data: {
-                            url: newsurl
-                            // TODO: ADD VILLAGE LIST                  
+                            url: newsurl,
+                            village: checkedItems
                         }
                     }
                     try {
-                        // ADD NEWS WITHURL
                         const response = await ApiCall(
                             'POST',
                             `${process.env.NEXT_PUBLIC_URL}/api/fetch-metadata`,
@@ -275,21 +310,23 @@ const Village = () => {
                         toast.warning("All fields are mandatory")
                         return
                     }
-                    const body = {
-                        data: {
-                            "title": newstitle,
-                            "description": newsdescription,
-                            "news_category": newscategory,
-                            "village": checkedItems,
-                            "author": newsauthor,
-                            "source": newssource,
-                            "member": localStorage.getItem("MemberId"),
-                            // "newsImage": FIXME: ,
-                        }
-                    }
-
                     try {
-                        // ADD NEWS WITHOUTURL
+                        toast.info('Adding News...', { autoClose: false });
+                        const imageIds = await UploadImage(NEWS, newsimage, checkedItems)
+                        const memberid = localStorage.getItem("MemberId")
+                        const body = {
+                            data: {
+                                "title": newstitle,
+                                "description": newsdescription,
+                                "news_category": newscategory,
+                                "village": checkedItems,
+                                "author": newsauthor,
+                                "source": newssource,
+                                "member": memberid,
+                                "newsImage": imageIds,
+                            }
+                        }
+                        console.log(body)
                         const response = await ApiCall(
                             'POST',
                             `${process.env.NEXT_PUBLIC_URL}/api/news`,
@@ -298,13 +335,16 @@ const Village = () => {
                             "Fail to Add News"
                         )
                         if (response?.data?.id) {
+                            toast.dismiss()
                             toast.success("News Added SuccessFully")
                         }
                         else {
+                            toast.dismiss()
                             toast.warning("Something went wrong")
                         }
 
                     } catch (error) {
+                        toast.dismiss()
                         console.log(error)
                     }
                 }
@@ -315,10 +355,8 @@ const Village = () => {
                     return
                 }
                 try {
-                    toast.info('Uploading image...', { autoClose: false });
-                    const imageIds = await UploadImage(NOTICE, noticeimage, checkedItems)                                    
-                    toast.dismiss()
-                    toast.success('Image uploaded successfully!', { autoClose: 3000 });
+                    toast.info('Adding Notice...', { autoClose: false });
+                    const imageIds = await UploadImage(NOTICE, noticeimage, checkedItems)
                     const body = {
                         "data": {
                             "heading": noticeheading,
@@ -340,10 +378,12 @@ const Village = () => {
                         "Unable to Add Notice"
                     )
                     if (response?.data?.id) {
+                        toast.dismiss()
                         toast.success("SuccessFully Added Notice")
                         ClearAllStateValue()
                     }
                     else {
+                        toast.dismiss()
                         toast.error("Unable to add")
                     }
 
@@ -393,7 +433,7 @@ const Village = () => {
         }
     }, [])
 
-    
+
     // filter Function on change of values
     useEffect(() => {
         FilterOutData()

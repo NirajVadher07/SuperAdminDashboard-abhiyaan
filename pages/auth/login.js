@@ -20,43 +20,54 @@ const Login = () => {
             toast.error("Email and Passoword cannot be empty")
             return
         }
-        const url = `${process.env.NEXT_PUBLIC_URL}/api/auth/local`
-        const body = {
-            "identifier": email,
-            "password": password
-        }
 
-        const requestOptions = {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body)
-        };
-
-        const res = await fetch(url, requestOptions);
-        const data = await res.json();
-
-        if (data.jwt) {            
-            localStorage.setItem("UserToken", data.jwt)
-            let url = `${process.env.NEXT_PUBLIC_URL}/api/members?filters[mobile]=${data?.user?.mobile}`
-            let requestOptions = {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${data.jwt}` }
+        try {
+            const url = `${process.env.NEXT_PUBLIC_URL}/api/auth/local`
+            const body = {
+                "identifier": email,
+                "password": password
             }
-            const responseJson = await fetch(url, requestOptions);
-            const response = await responseJson.json();            
-            const memberId = response?.data?.[0]?.id
-            console.log(memberId)
-            localStorage.setItem("MemberId", memberId)
-            router.push("/")
-        }
-        else {
-            toast.error("Invalid Credentials")
-        }
+            const requestOptions = {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body)
+            };
 
-        setEmail("")
-        setPassword("")
+            const res = await fetch(url, requestOptions);
+            const data = await res.json();
+
+            if (data.jwt) {
+                localStorage.setItem("UserToken", data.jwt)
+                let url = `${process.env.NEXT_PUBLIC_URL}/api/members?filters[mobile]=${data?.user?.mobile}`
+                let requestOptions = {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${data.jwt}` }
+                }
+                const responseJson = await fetch(url, requestOptions);
+                const response = await responseJson.json();
+                const memberId = response?.data?.[0]?.id
+                // localStorage.setItem("MemberId", memberId)
+                // router.push("/")
+                if (memberId) {
+                    localStorage.setItem("MemberId", memberId)
+                    router.push("/")
+                }
+                else {
+                    toast.warning("Member Not Found")
+                    localStorage.removeItem("UserToken")
+                }
+            }
+            else {
+                toast.error("Invalid Credentials")
+            }
+            setEmail("")
+            setPassword("")
+
+        } catch (error) {
+            console.log({ error })
+        }
     }
 
     return (

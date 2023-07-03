@@ -3,7 +3,7 @@ const logout = () => {
         const UserToken = localStorage.getItem("UserToken");
         if (UserToken) {
             localStorage.removeItem("UserToken")
-            localStorage.removeItem("UserDetails")
+            localStorage.removeItem("MemberId")
             return true
         }
         else {
