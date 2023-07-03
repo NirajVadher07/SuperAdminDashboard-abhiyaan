@@ -3,7 +3,11 @@
 # Super Admin Dashboard
 
 ## How to start 
-First, run the development server:
+1. create a ```.env.local``` file in root directory 
+```
+NEXT_PUBLIC_URL=your_url
+```
+2. run the development server:
 ```bash
 npm run dev
 ```
